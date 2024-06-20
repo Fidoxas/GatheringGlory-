@@ -14,7 +14,7 @@ public class CastleGenerator : MonoBehaviour
         
         int startX = Random.Range(rangeXCastleArea.Start.Value, rangeXCastleArea.End.Value + 1);
         int startY = Random.Range(rangeYCastleArea.Start.Value, rangeYCastleArea.End.Value + 1);
-
+        
         List<Vector2> castleCoords = new List<Vector2>();
         for (int y = startY; y < startY + 2; y++)
         {
@@ -23,9 +23,7 @@ public class CastleGenerator : MonoBehaviour
                 castleCoords.Add(new Vector2(x, y));
             }
         }
-
-        Debug.Log("Castle placement successful.");
-        return castleAreaCords.ToArray();
+        // return castleAreaCords.ToArray();
         return castleCoords.ToArray();
     }
      private static (Vector2[], Range, Range) SetCastleArea(int stage, int stageRows, int spacing, int borderSpace = 3)
@@ -43,7 +41,6 @@ public class CastleGenerator : MonoBehaviour
 
         if (stage == leftUpCorner)
         {
-            Debug.Log("leftupCorner");
             var coords = new Vector2[(spacing - borderSpace - 2) * (spacing - borderSpace - 2)];
             var x = new Range(1,spacing-borderSpace-2);
             var y = new Range(1,spacing- borderSpace-2);
@@ -58,7 +55,6 @@ public class CastleGenerator : MonoBehaviour
         }
         else if (stage == leftDownCorner)
         {
-            Debug.Log("leftDownCorner");
             var coords = new Vector2[(spacing - borderSpace - 2) * (spacing - borderSpace - 2)];
             var x = new Range(1, spacing - borderSpace - 2);
             var y = new Range(stage/stageRows*spacing + borderSpace, (stage/stageRows+1)*spacing-2);
@@ -73,7 +69,6 @@ public class CastleGenerator : MonoBehaviour
         }
         else if (upEdge.Contains(stage))
         {
-            Debug.Log("upEdge");
             var coords = new Vector2[(spacing - 2 * borderSpace - 1) * (spacing - borderSpace - 2)];
             var x = new Range(stage*spacing+ borderSpace, (stage+ 1)*spacing - borderSpace - 2);
             var y = new Range(1, spacing - borderSpace - 2);
@@ -84,13 +79,10 @@ public class CastleGenerator : MonoBehaviour
             var coords = new Vector2[(spacing - borderSpace -borderSpace-1) * (spacing - borderSpace-2)];
             var x = new Range(stage%stageRows*spacing+ borderSpace, (stage%stageRows+ 1)*spacing - borderSpace - 2);
             var y = new Range(stage/stageRows*spacing + borderSpace, ((stage/stageRows+1))*spacing-3);
-            Debug.Log(stage + " stage");
-            Debug.Log( y.End.Value + " koniec");
             return (coords, x, y);
         }
         else if (leftEdge.Contains(stage))
         {
-            Debug.Log("right Down Corner");
             var coords = new Vector2[(spacing - 2 * borderSpace - 1) * (spacing - borderSpace - 2)];
             var x = new Range(1, spacing - borderSpace - 2);
             var y = new Range(stage/stageRows*spacing+ borderSpace, (stage/stageRows+1)*spacing+ borderSpace);
@@ -128,7 +120,6 @@ public class CastleGenerator : MonoBehaviour
             }
         }
 
-        Debug.Log(castleGenerateArea[0] + "," + castleGenerateArea[castleGenerateArea.Length-1]);
 
         return castleGenerateArea.ToArray();
     }

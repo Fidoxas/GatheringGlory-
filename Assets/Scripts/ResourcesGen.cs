@@ -5,9 +5,16 @@ using UnityEngine.Serialization;
 
 public class ResourcesGen : MonoBehaviour
 {
+    private int _stageNum;
+    private int _spacing;
+    private int _stageRows;
     public ResourceDB resourceDB;
     public Stack<Terrain.TerrainResource> CreateResourcesForStage(List<Vector2> occupedTillesCords, int currentStageNum, int spacing, int stageRows)
     {
+        _stageNum = currentStageNum;
+        _spacing = spacing;
+        _stageRows = stageRows;
+        
         List<int> corners = new List<int>()
         {
             0,
@@ -48,12 +55,12 @@ public class ResourcesGen : MonoBehaviour
        return terrainResources;
     }
 
-    private static Vector2 GenerateUniqueCoordinate(List<Vector2> occupedTillesCords, int spacing, Vector2? existingCoord = null)
+    private Vector2 GenerateUniqueCoordinate(List<Vector2> occupedTillesCords, int spacing, Vector2? existingCoord = null)
     {
         Vector2 newCoord;
         do
         {
-            newCoord = new Vector2(Random.Range(0, spacing - 1), Random.Range(0, spacing - 1));
+            newCoord = new Vector2(Random.Range(_stageNum%_stageRows* spacing,(_stageNum%_stageRows+1)* spacing - 1), Random.Range(_stageNum/_stageRows* spacing, (_stageNum/_stageRows+1)* spacing - 1));
         } while (occupedTillesCords.Contains(newCoord) || (existingCoord.HasValue && newCoord == existingCoord.Value));
 
         return newCoord;

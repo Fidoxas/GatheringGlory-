@@ -47,8 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   occupedTillesCords: []
-  castleCoords: []
   playersDB: {fileID: 11400000, guid: 5834f79d92e15fd499ccebf7fc1183a9, type: 2}
+  resourcesGen: {fileID: 3178426974645552036}
 --- !u!114 &3178426974645552036
 MonoBehaviour:
   m_ObjectHideFlags: 0
