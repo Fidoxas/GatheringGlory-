@@ -10,7 +10,7 @@ public class SpecialStage : Stage
     }
 
     public SpecialStage(Material material, GameObject gameObject,List<GameObject> tilles) 
-        : base("", material, Player.PlayersNum.None, StageType.Special, gameObject ,null,null)
+        : base("", material, Player.Numbers.None, Type.Special, gameObject ,null,null)
     {
         
     }

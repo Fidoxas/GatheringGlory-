@@ -151,34 +151,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cde26476a71a84543b1b13a89a14f8cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  workValues:
-  - pName: doramenon
-    material: {fileID: 2100000, guid: e2e0caded60ed524f85bb1a2cd775709, type: 2}
-    type: 0
-  - pName: noobxd
-    material: {fileID: 2100000, guid: f42be27e5c669124b85473de1a786923, type: 2}
-    type: 1
-  - pName: yoda
-    material: {fileID: 2100000, guid: e2e0caded60ed524f85bb1a2cd775709, type: 2}
-    type: 2
-  - pName: kimn
-    material: {fileID: 2100000, guid: f42be27e5c669124b85473de1a786923, type: 2}
-    type: 3
-  - pName: greece
-    material: {fileID: 2100000, guid: e2e0caded60ed524f85bb1a2cd775709, type: 2}
-    type: -1
-  - pName: dog123
-    material: {fileID: 2100000, guid: f42be27e5c669124b85473de1a786923, type: 2}
-    type: 5
-  - pName: kunda
-    material: {fileID: 2100000, guid: e2e0caded60ed524f85bb1a2cd775709, type: 2}
-    type: 6
-  - pName: nemeczak
-    material: {fileID: 2100000, guid: f42be27e5c669124b85473de1a786923, type: 2}
-    type: 7
-  - pName: mietczak
-    material: {fileID: 2100000, guid: e2e0caded60ed524f85bb1a2cd775709, type: 2}
-    type: 8
   stages:
   - {fileID: 0}
   - {fileID: 0}
@@ -189,11 +161,10 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  spaceBetweenCastles: 10
   terrainPrefab: {fileID: 3931229336507986017, guid: 590cf3f0676a1954f8994a458e23024a, type: 3}
+  _seed: 4
   stageRows: 3
   spacing: 15
-  seed: 0.18311562
 --- !u!4 &888613214
 Transform:
   m_ObjectHideFlags: 0

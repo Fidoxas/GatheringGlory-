@@ -1,31 +1,22 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ArenaGenerator : MonoBehaviour
 {
     [SerializeField] private List<List<Tile.Type>> _arenaTiles;  
-    [SerializeField] StageV[] workValues;
     [SerializeField] private Stage[] stages;
     [SerializeField] private GameObject terrainPrefab;
-
+    [SerializeField]float _seed;
+    
     public int stageRows = 3;
     public int spacing = 10;
-    [SerializeField]float seed;
-
+    private float seed;
+        
+    
     [ContextMenu("Generate Arena")]
     public void GenerateArenaFromEditor()
     {
-        if (workValues == null)
-        {
-            workValues = new StageV[stageRows * stageRows];
-            for (int i = 0; i < workValues.Length; i++)
-            {
-                workValues[i] = new StageV();
-            }
-        }
-
-        seed = Random.Range(0.1f, seed);
+        seed = Random.Range(0.1f, _seed);
         ClearArena();
         GenerateArena();
     }
@@ -45,15 +36,7 @@ public class ArenaGenerator : MonoBehaviour
                 row.Add(Tile.Type.Neutral);
             }
         }
-        if (workValues == null)
-        {
-            workValues = new StageV[stageRows * stageRows];
-            for (int i = 0; i < workValues.Length; i++)
-            {
-                workValues[i] = new StageV();
-            }
-        }
-
+      
         seed = Random.Range(0.1f, seed);
         ClearArena();
         GenerateArena();
@@ -70,7 +53,7 @@ public class ArenaGenerator : MonoBehaviour
     void GenerateArena()
     {
         Prepare();
-        CreateStages();
+        // CreateStages();
         CreateTerrain();
     }
 
@@ -104,54 +87,39 @@ public class ArenaGenerator : MonoBehaviour
 
     private void SetStage(GameObject stage, int index)
     {
-        if (workValues == null || index >= workValues.Length || workValues[index] == null)
-        {
-            Debug.LogError($"Invalid workValues at index {index}. Ensure workValues is properly initialized and has sufficient elements.");
-            return;
-        }
-
         Stage s;
 
         if (index == 4)
         {
             s = stage.AddComponent<SpecialStage>();
-            s.material = workValues[index].material != null ? workValues[index].material : new Material(Shader.Find($"Standard"));
-            s.numberP = Player.PlayersNum.None;
-            s.type = Stage.StageType.Special;
+            s.numberP = Player.Numbers.None;
+            s.type = Stage.Type.Special;
         }
         else
         {
             s = stage.AddComponent<Stage>();
-            s.pName = workValues[index].pName;
-            s.material = workValues[index].material != null ? workValues[index].material : new Material(Shader.Find($"Standard"));
 
-            if (index < (int)Stage.StageType.Special)
+            if (index < (int)Stage.Type.Special)
             {
-                s.numberP = (Player.PlayersNum)index;
-                s.type = (Stage.StageType)index;
+                s.numberP = (Player.Numbers)index;
+                s.type = (Stage.Type)index;
             }
             else
             {
-                s.numberP = (Player.PlayersNum)(index - 1);
-                s.type = (Stage.StageType)index;
+                s.numberP = (Player.Numbers)(index - 1);
+                s.type = (Stage.Type)index;
             }
         }
 
-        // Assign common properties
         s.gameObject = stage;
         stages[index] = s;
     }
 
     private void CreateTerrain()
     {
-        foreach (Stage stage in stages)
-        {
-            var terrainObj = Instantiate(terrainPrefab, stage.gameObject.transform);
-            var ter = terrainObj.GetComponent<Terrain>();
-            ter.stage = stage;
-            ter._terrainObj = terrainObj;
-            // Terrain ter = Terrain.CreateTerrainObj(stage).GetComponent<Terrain>();
-            StartCoroutine(ter.CreateTerrain(stageRows, spacing, seed));
-        }
+         var terrainObj = Instantiate(terrainPrefab, gameObject.transform);
+         var ter = terrainObj.GetComponent<Terrain>();
+         // Terrain ter = Terrain.CreateTerrainObj(stage).GetComponent<Terrain>();
+         StartCoroutine(ter.CreateTerrain(stageRows, spacing, seed));
     }
 }

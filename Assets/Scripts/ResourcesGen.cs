@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using ScriptablesOBJ;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class ResourcesGen : MonoBehaviour
 {
-    public ScriptableObjects scriptableObjects;
+    public ResourceDB resourceDB;
     public Stack<Terrain.TerrainResource> CreateResourcesForStage(List<Vector2> occupedTillesCords, int currentStageNum, int spacing, int stageRows)
     {
         List<int> corners = new List<int>()
@@ -30,10 +32,10 @@ public class ResourcesGen : MonoBehaviour
         Stack<Terrain.TerrainResource> terrainResources = new Stack<Terrain.TerrainResource>();
      
         var copperCoords = GenerateUniqueCoordinate(occupedTillesCords, spacing);
-        terrainResources.Push(new Terrain.TerrainResource(copperCoords, scriptableObjects.copper));
+        terrainResources.Push(new Terrain.TerrainResource(copperCoords, resourceDB.copper));
         
         var ironCoords = GenerateUniqueCoordinate(occupedTillesCords, spacing, copperCoords);
-        terrainResources.Push(new Terrain.TerrainResource(ironCoords, scriptableObjects.iron));
+        terrainResources.Push(new Terrain.TerrainResource(ironCoords, resourceDB.iron));
 
         return terrainResources;
     }
@@ -42,7 +44,7 @@ public class ResourcesGen : MonoBehaviour
     {
         Stack<Terrain.TerrainResource> terrainResources = new Stack<Terrain.TerrainResource>();
        var goldCoords = GenerateUniqueCoordinate(occupedTillesCords, spacing);
-       terrainResources.Push(new Terrain.TerrainResource(goldCoords, scriptableObjects.gold));
+       terrainResources.Push(new Terrain.TerrainResource(goldCoords, resourceDB.gold));
        return terrainResources;
     }
 

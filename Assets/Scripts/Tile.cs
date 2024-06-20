@@ -1,8 +1,10 @@
+using System;
+using ScriptablesOBJ;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    public Player.PlayersNum player = Player.PlayersNum.None;
+    public Player.Numbers player = Player.Numbers.None;
     public Type type = Type.Neutral;
     public Material mat;
     public Vector2 coords;
@@ -13,24 +15,28 @@ public class Tile : MonoBehaviour
         Neutral,
         Castle
     }
-   public static void CreateTile(Vector3[] triangle1, Vector3[] triangle2, GameObject terrainObj, Vector2 coords,
-        Type type, Resource resource)
+   public static void CreateTile(Vector3[] triangle1, Vector3[] triangle2, Transform transform, Vector2 coords,
+        Type type, Resource resource,Material mat)
     {
-        GameObject tileObj = new GameObject("Tile");
-        Stage stage = terrainObj.GetComponent<Terrain>().stage;
-        tileObj.transform.SetParent(terrainObj.transform);
+        if (mat == null)
+        {
+            mat = new Material(Shader.Find($"Standard"));
+        }
+        string tileName = $"Tile_{coords.x}_{coords.y}";
+        GameObject tileObj = new GameObject(tileName);
+        tileObj.transform.SetParent(transform);
 
         Tile tileSc;
         if (type == Type.Neutral)
         {
             tileSc = tileObj.AddComponent<Tile>();
-            tileSc.mat = stage.material;
+            tileSc.mat = mat;
             tileSc.coords = coords;
         }
         else if (type == Type.Castle)
         {
             tileSc = tileObj.AddComponent<CastleTile>();
-            tileSc.mat = new Material(Shader.Find($"Standard"));
+            tileSc.mat = mat;
             tileSc.coords = coords;
         }
         else if(type == Type.Resource)
@@ -40,8 +46,8 @@ public class Tile : MonoBehaviour
             
         }
 
-        CreateTriangle(tileObj, triangle1[0], triangle1[1], triangle1[2]);
-        CreateTriangle(tileObj, triangle2[0], triangle2[1], triangle2[2]);
+        CreateTriangle(tileObj.transform, triangle1[0], triangle1[1], triangle1[2]);
+        CreateTriangle(tileObj.transform, triangle2[0], triangle2[1], triangle2[2]);
 
         foreach (Transform triangle in tileObj.transform)
         {
@@ -50,10 +56,10 @@ public class Tile : MonoBehaviour
         }
     }
 
-    public static void CreateTriangle(GameObject terrain, Vector3 v0, Vector3 v1, Vector3 v2)
+    public static void CreateTriangle(Transform transform, Vector3 v0, Vector3 v1, Vector3 v2)
     {
         GameObject triangleObj = new GameObject("Triangle");
-        triangleObj.transform.SetParent(terrain.transform);
+        triangleObj.transform.SetParent(transform);
         triangleObj.transform.localPosition = Vector3.zero;
         triangleObj.transform.localRotation = Quaternion.identity;
 

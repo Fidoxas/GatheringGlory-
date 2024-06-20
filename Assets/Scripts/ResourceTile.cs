@@ -2,7 +2,7 @@
 
 public class ResourceTile : Tile
 {
-    public new Player.PlayersNum player;
+    public new Player.Numbers player;
     //public new Material mat;
     //public new Type type = Type.Resource;
     public Resource resource;
