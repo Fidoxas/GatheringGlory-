@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
 using ScriptablesOBJ;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -30,18 +32,19 @@ public class ResourcesGen : MonoBehaviour
         }
         else
         {
-            return  Generate2WeakResources(occupedTillesCords, spacing);
+            return  Generate2WeakResources(occupedTillesCords, spacing,stageRows);
         }
     }
 
-    private Stack<Terrain.TerrainResource> Generate2WeakResources(List<Vector2> occupedTillesCords, int spacing)
+    private Stack<Terrain.TerrainResource> Generate2WeakResources(List<Vector2> occupedTillesCords, int spacing, int stageRows)
     {
         Stack<Terrain.TerrainResource> terrainResources = new Stack<Terrain.TerrainResource>();
      
         var copperCoords = GenerateUniqueCoordinate(occupedTillesCords, spacing);
         terrainResources.Push(new Terrain.TerrainResource(copperCoords, resourceDB.copper));
-        
-        var ironCoords = GenerateUniqueCoordinate(occupedTillesCords, spacing, copperCoords);
+        var copperArea = StructureAreaChecker.TilesAround(new Vector2[] { copperCoords }, stageRows * spacing).ToArray();
+            
+        var ironCoords = GenerateUniqueCoordinate(occupedTillesCords, spacing, copperArea);
         terrainResources.Push(new Terrain.TerrainResource(ironCoords, resourceDB.iron));
 
         return terrainResources;
@@ -55,13 +58,13 @@ public class ResourcesGen : MonoBehaviour
        return terrainResources;
     }
 
-    private Vector2 GenerateUniqueCoordinate(List<Vector2> occupedTillesCords, int spacing, Vector2? existingCoord = null)
+    private Vector2 GenerateUniqueCoordinate(List<Vector2> occupedTillesCords, int spacing, [CanBeNull] Vector2[] existingCoord = null)
     {
         Vector2 newCoord;
         do
         {
             newCoord = new Vector2(Random.Range(_stageNum%_stageRows* spacing,(_stageNum%_stageRows+1)* spacing - 1), Random.Range(_stageNum/_stageRows* spacing, (_stageNum/_stageRows+1)* spacing - 1));
-        } while (occupedTillesCords.Contains(newCoord) || (existingCoord.HasValue && newCoord == existingCoord.Value));
+        } while (occupedTillesCords.Contains(newCoord) || (existingCoord != null && existingCoord.Contains(newCoord)));
 
         return newCoord;
     }

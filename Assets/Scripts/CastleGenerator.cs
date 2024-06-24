@@ -83,9 +83,9 @@ public class CastleGenerator : MonoBehaviour
         }
         else if (leftEdge.Contains(stage))
         {
-            var coords = new Vector2[(spacing - 2 * borderSpace - 1) * (spacing - borderSpace - 2)];
+            var coords = new Vector2[((spacing - 2 * borderSpace) - 1) * (spacing - borderSpace - 2)];
             var x = new Range(1, spacing - borderSpace - 2);
-            var y = new Range(stage/stageRows*spacing+ borderSpace, (stage/stageRows+1)*spacing+ borderSpace);
+            var y = new Range(stage/stageRows*spacing+ borderSpace, (stage/stageRows+1)*spacing -borderSpace-2);
             return (coords, x, y);
         }
         else if (rightEdge.Contains(stage))
