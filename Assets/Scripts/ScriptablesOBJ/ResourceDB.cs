@@ -8,5 +8,6 @@ namespace ScriptablesOBJ
         public Resource gold;
         public Resource copper;
         public Resource iron;
+        public Resource diam;
     }
 }

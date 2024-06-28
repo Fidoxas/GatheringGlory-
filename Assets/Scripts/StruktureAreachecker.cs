@@ -7,7 +7,7 @@ public class StructureAreaChecker
     public static List<Vector2> TilesAround(Vector2[] structure, int areaLine)
     {
         Vector2 start = new Vector2(structure[0].x - 1, structure[0].y - 1);
-        int structureAreaLen = (int)Math.Sqrt(structure.Length) + 2;
+        int structureAreaLen = (int)Mathf.Sqrt(structure.Length) + 2;
 
         List<Vector2> structureArea = new List<Vector2>();
 

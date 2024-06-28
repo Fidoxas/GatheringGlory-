@@ -15,3 +15,4 @@ MonoBehaviour:
   gold: {fileID: 11400000, guid: 8f86c6c857a834240b2c2a1bb1218be8, type: 2}
   copper: {fileID: 11400000, guid: b36ffa5f926ae9c40a13651e63144e15, type: 2}
   iron: {fileID: 11400000, guid: 2cda0fcfe3a51ce43ae3b5978a45073b, type: 2}
+  diam: {fileID: 11400000, guid: 9142385dddeff9d438c61275417cface, type: 2}

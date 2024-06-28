@@ -13,6 +13,7 @@ public class Resource : ScriptableObject
     {
         Copper,
         Iron,
-        Gold
+        Gold,
+        Diam
     }
 }

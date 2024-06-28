@@ -20,7 +20,6 @@ public class Terrain : MonoBehaviour
         PrepareStructures(spacing, stageRows);
 
         var flatVertices = FindFlatVertices(0.5f, spacing, stageRows);
-
         for (int y = 0; y < spacing * stageRows; y++)
         {
             int yI = spacing * stageRows - 1 - y;
@@ -35,21 +34,19 @@ public class Terrain : MonoBehaviour
                 if (currentStage != Stage.Type.Special && IsTileInCastleCoords(newTileCoords))
                 {
                     Tile.CreateTile(new[] { vertices[0], vertices[2], vertices[1] },
-                        new[] { vertices[1], vertices[2], vertices[3] }, this.transform, new Vector2(x, y),
+                        new[] { vertices[1], vertices[2], vertices[3] }, this.transform, newTileCoords,
                         Tile.Type.Castle, null, currentPlayerDB.material);
                 }
-                else if (currentStage != Stage.Type.Special &&
-                         IsTileInResourceCoords(newTileCoords, out TerrainResource resource))
+                else if (IsTileInResourceCoords(newTileCoords, out TerrainResource resource))
                 {
                     Tile.CreateTile(new[] { vertices[0], vertices[2], vertices[1] },
-                        new[] { vertices[1], vertices[2], vertices[3] }, this.transform, new Vector2(x, y),
+                        new[] { vertices[1], vertices[2], vertices[3] }, this.transform, newTileCoords,
                         Tile.Type.Resource, resource.Resource, resource.Resource.material);
-                    RemoveResource(resource);
                 }
                 else
                 {
                     Tile.CreateTile(new[] { vertices[0], vertices[2], vertices[1] },
-                        new[] { vertices[1], vertices[2], vertices[3] }, this.transform, new Vector2(x, y),
+                        new[] { vertices[1], vertices[2], vertices[3] }, this.transform, newTileCoords,
                         Tile.Type.Neutral, null, null);
                 }
 
@@ -60,7 +57,7 @@ public class Terrain : MonoBehaviour
 
     private List<Vector2> FindFlatVertices(float flatHeight, int spacing, int stageRows)
     {
-        var _flatVerts = new List<Vector2>();
+        var flatVerts = new List<Vector2>();
         for (int y = 0; y < spacing * stageRows; y++)
         {
             int yI = spacing * stageRows - 1 - y;
@@ -77,12 +74,12 @@ public class Terrain : MonoBehaviour
 
                     foreach (Vector3 vert in vertices)
                     {
-                        _flatVerts.Add(new Vector2(vert.x, vert.z));
+                        flatVerts.Add(new Vector2(vert.x, vert.z));
                     }
                 }
             }
         }
-        return _flatVerts;
+        return flatVerts;
     }
 
     private Vector3[] GenerateVertices(int x, int yI, List<Vector2> flatVertices, Vector3 arenaPos, float seed)
@@ -124,24 +121,29 @@ public class Terrain : MonoBehaviour
             {
                 int adjustedStage = currentStage < 4 ? currentStage : currentStage - 1;
                 CastleCoords[adjustedStage] = CastleGenerator.DrawCastlePlace(spacing, currentStage, stageRows);
-                List<Vector2> CastleArea =
-                    StructureAreaChecker.TilesAround(CastleCoords[adjustedStage], spacing * stageRows);
+                List<Vector2> CastleArea = StructureAreaChecker.TilesAround(CastleCoords[adjustedStage].ToArray(), spacing * stageRows);
                 occupedTillesCords.AddRange(CastleArea);
-                var resourcesForStage =
-                    resourcesGen.CreateResourcesForStage(occupedTillesCords, currentStage, spacing, stageRows);
+                var resourcesForStage = resourcesGen.CreateResourcesForStage(occupedTillesCords, currentStage, spacing, stageRows);
 
                 foreach (var resource in resourcesForStage)
                 {
                     _terrainResources.Push(resource);
-                    List<Vector2> resourceCoords = new List<Vector2> { resource.Coords };
-                    List<Vector2> resourceArea =
-                        StructureAreaChecker.TilesAround(resourceCoords.ToArray(), spacing * stageRows);
+                    List<Vector2> resourceCoords = new List<Vector2> { resource.Coords.Peek() };
+                    List<Vector2> resourceArea = StructureAreaChecker.TilesAround(resourceCoords.ToArray(), spacing * stageRows);
                     occupedTillesCords.AddRange(resourceArea);
                 }
             }
+            else if ((Stage.Type)currentStage == Stage.Type.Special)
+            {
+                var specialResource = resourcesGen.GenerateBestResource(occupedTillesCords, currentStage, spacing);
+                _terrainResources.Push(specialResource);
+                Vector2[] specialResourceCoords = specialResource.Coords.ToArray();
+                Array.Reverse(specialResourceCoords);
+                Debug.Log("DLUGOSC " + specialResourceCoords.Length);
+                List<Vector2> specialResourceArea = StructureAreaChecker.TilesAround(specialResourceCoords, spacing * stageRows);
+                occupedTillesCords.AddRange(specialResourceArea);
+            }
         }
-
-        Debug.Log(_terrainResources.Count + " terrain resources");
     }
 
     bool IsTileInCastleCoords(Vector2 newTileCoords)
@@ -161,30 +163,39 @@ public class Terrain : MonoBehaviour
     {
         foreach (var resource in _terrainResources)
         {
-            if (resource.Coords == newTileCoords)
+            foreach (var coords in resource.Coords)
             {
-                foundResource = resource;
-                return true;
+                if (coords == newTileCoords)
+                {
+                    foundResource = resource;
+                    return true;
+                }
             }
         }
-
         foundResource = null;
         return false;
     }
 
-
-
-    void RemoveResource(TerrainResource resource)
+    private void RemoveResource(TerrainResource resource)
     {
-        _terrainResources = new Stack<TerrainResource>(_terrainResources.Where(r => r != resource));
+        if (resource.Coords.Count > 0)
+        {
+            Debug.Log($"{resource.Coords.Count} {resource.Resource.type}");
+            resource.Coords.Pop();
+        }
+        else
+        {
+            Debug.Log("koniec" + resource.Resource.type);
+            _terrainResources = new Stack<TerrainResource>(_terrainResources.Where(r => r != resource));
+        }
     }
 
     public class TerrainResource
     {
-        public Vector2 Coords { get; set; }
+        public Stack<Vector2> Coords { get; set; }
         public Resource Resource { get; set; }
 
-        public TerrainResource(Vector2 coords, Resource resource)
+        public TerrainResource(Stack<Vector2> coords, Resource resource)
         {
             Coords = coords;
             Resource = resource;
