@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c80fdb1470fc4cf687b0ce0008bc09bb, type: 3}
+  m_Name: Cast 3
+  m_EditorClassIdentifier: 
+  castleCords:
+  - {x: 33, y: 36}
+  - {x: 34, y: 36}
+  - {x: 33, y: 35}
+  - {x: 34, y: 35}
+  nation: {fileID: 11400000, guid: 5d5d9ef237763a24abace142f3e73769, type: 2}
+  castleObj: {fileID: 0}

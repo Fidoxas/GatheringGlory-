@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CastleTile : Tile
 {
-    public Player.Numbers player = Player.Numbers.P1;
-    public Material mat;
-    public Type type = Type.Castle;
+    public Castle.Type nation;
 
     // public static bool CanGenerate(Vector2 newCastleCoords, Vector2 castleCoords1, Vector2 castleCoords2, int minSpace)
     // {

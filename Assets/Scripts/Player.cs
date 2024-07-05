@@ -6,8 +6,8 @@ using UnityEngine.Serialization;
 public class Player : MonoBehaviour
 {
     public string pname;
-    [FormerlySerializedAs("playersNum")] public Numbers numbers;
-    public Castles.Type type;
+    public Numbers numbers;
+    public Castle.Type type;
 
     public enum Numbers
     {

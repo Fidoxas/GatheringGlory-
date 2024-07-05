@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    public Player.Numbers player = Player.Numbers.None;
+    public Player.Numbers player;
     public Type type = Type.Neutral;
     public Material mat;
     public Vector2 coords;
@@ -15,13 +15,16 @@ public class Tile : MonoBehaviour
         Neutral,
         Castle
     }
-   public static void CreateTile(Vector3[] triangle1, Vector3[] triangle2, Transform transform, Vector2 coords,
-        Type type, Resource resource,Material mat)
+
+    public static void CreateTile(Vector3[] triangle1, Vector3[] triangle2, Transform transform, Vector2 coords,
+        Type type,Player.Numbers occupator, Resource resource, Material mat, Castle.Type nation)
     {
         if (mat == null)
         {
-            mat = new Material(Shader.Find($"Standard"));
+            mat = new Material(Shader.Find("Standard"));
+            Debug.LogWarning("Material was null. A default standard material has been assigned.");
         }
+
         string tileName = $"Tile_{coords.x}_{coords.y}";
         GameObject tileObj = new GameObject(tileName);
         tileObj.transform.SetParent(transform);
@@ -30,33 +33,38 @@ public class Tile : MonoBehaviour
         if (type == Type.Neutral)
         {
             tileSc = tileObj.AddComponent<Tile>();
-            tileSc.mat = mat;
-            tileSc.coords = coords;
+            tileSc.player = occupator;
         }
         else if (type == Type.Castle)
         {
-            tileSc = tileObj.AddComponent<CastleTile>();
-            tileSc.mat = mat;
-            tileSc.coords = coords;
+            var castleTileSc = tileObj.AddComponent<CastleTile>();
+            castleTileSc.nation = nation;
+            tileSc = castleTileSc;
+            tileSc.player = occupator;
         }
-        else if(type == Type.Resource)
+        else if (type == Type.Resource)
         {
-            tileSc = tileObj.AddComponent<ResourceTile>();
-            tileSc.mat = resource.material;
-            
+            var resourceTileSc = tileObj.AddComponent<ResourceTile>();
+            resourceTileSc.mat = resource.material;
+            tileSc = resourceTileSc;
+            tileSc.player = occupator;
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException();
         }
 
-        CreateTriangle(tileObj.transform, triangle1[0], triangle1[1], triangle1[2]);
-        CreateTriangle(tileObj.transform, triangle2[0], triangle2[1], triangle2[2]);
+        tileSc.mat = mat;
+        tileSc.coords = coords;
+        tileSc.type = type;
 
-        foreach (Transform triangle in tileObj.transform)
-        {
-            MeshRenderer renderer = triangle.GetComponent<MeshRenderer>();
-            renderer.sharedMaterial = tileObj.GetComponent<Tile>().mat;
-        }
+        CreateTriangle(tileObj.transform, triangle1[0], triangle1[1], triangle1[2], tileSc.mat);
+        CreateTriangle(tileObj.transform, triangle2[0], triangle2[1], triangle2[2], tileSc.mat);
+
+        Debug.Log($"Created tile of type {type} at coordinates {coords} with material {mat.name}");
     }
 
-    public static void CreateTriangle(Transform transform, Vector3 v0, Vector3 v1, Vector3 v2)
+    public static void CreateTriangle(Transform transform, Vector3 v0, Vector3 v1, Vector3 v2, Material mat)
     {
         GameObject triangleObj = new GameObject("Triangle");
         triangleObj.transform.SetParent(transform);
@@ -71,6 +79,9 @@ public class Tile : MonoBehaviour
         MeshFilter meshFilter = triangleObj.AddComponent<MeshFilter>();
         meshFilter.mesh = mesh;
 
-        triangleObj.AddComponent<MeshRenderer>();
+        MeshRenderer renderer = triangleObj.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = mat;
+
+        Debug.Log($"Created triangle with vertices {v0}, {v1}, {v2} and material {mat.name}");
     }
 }

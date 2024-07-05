@@ -120,6 +120,6 @@ public class ArenaGenerator : MonoBehaviour
          var terrainObj = Instantiate(terrainPrefab, gameObject.transform);
          var ter = terrainObj.GetComponent<Terrain>();
          // Terrain ter = Terrain.CreateTerrainObj(stage).GetComponent<Terrain>();
-         StartCoroutine(ter.CreateTerrain(stageRows, spacing, seed));
+         ter.CreateTerrain(stageRows, spacing, seed);
     }
 }

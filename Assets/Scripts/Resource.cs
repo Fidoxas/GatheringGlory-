@@ -11,9 +11,9 @@ public class Resource : ScriptableObject
     public Type type;
     public enum Type
     {
-        Copper,
-        Iron,
-        Gold,
-        Diam
+        Crystal,
+        Elest,
+        Runes,
+        Core
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ScriptablesOBJ;
@@ -10,11 +9,11 @@ public class Terrain : MonoBehaviour
 {
     [SerializeField] private Stack<TerrainResource> _terrainResources = new Stack<TerrainResource>();
     public List<Vector2> occupedTillesCords = new List<Vector2>();
-    public Vector2[][] CastleCoords = new Vector2[8][];
+    public Castle[] castles = new Castle[8];
     public PlayersDB playersDB;
     [SerializeField] ResourcesGen resourcesGen;
 
-    public IEnumerator CreateTerrain(int stageRows, int spacing, float seed)
+    public void CreateTerrain(int stageRows, int spacing, float seed)
     {
         Vector3 arenaPos = gameObject.transform.localPosition;
         PrepareStructures(spacing, stageRows);
@@ -35,22 +34,39 @@ public class Terrain : MonoBehaviour
                 {
                     Tile.CreateTile(new[] { vertices[0], vertices[2], vertices[1] },
                         new[] { vertices[1], vertices[2], vertices[3] }, this.transform, newTileCoords,
-                        Tile.Type.Castle, null, currentPlayerDB.material);
+                        Tile.Type.Castle, currentPlayerDB.pNum,null, currentPlayerDB.material,currentPlayerDB.castle.nation.kind);
                 }
                 else if (IsTileInResourceCoords(newTileCoords, out TerrainResource resource))
                 {
                     Tile.CreateTile(new[] { vertices[0], vertices[2], vertices[1] },
                         new[] { vertices[1], vertices[2], vertices[3] }, this.transform, newTileCoords,
-                        Tile.Type.Resource, resource.Resource, resource.Resource.material);
+                        Tile.Type.Resource,Player.Numbers.None, resource.Resource, resource.Resource.material,Castle.Type.None);
                 }
                 else
                 {
                     Tile.CreateTile(new[] { vertices[0], vertices[2], vertices[1] },
                         new[] { vertices[1], vertices[2], vertices[3] }, this.transform, newTileCoords,
-                        Tile.Type.Neutral, null, null);
+                        Tile.Type.Neutral,Player.Numbers.None, null, null,Castle.Type.None);
                 }
+            }
+            
+        }
 
-                yield return null;
+        CreateStructures();
+    }
+
+    private void CreateStructures()
+    {
+        GameObject structuresParent = new GameObject("Structures");
+    
+        foreach (var Castle in castles)
+        {
+            GameObject castleObject = StructuresCreator.CreateCastle(Castle.castleCords, Castle.nation.castlePrefab, Castle.mat);
+        
+            if (castleObject != null)
+            {
+                castleObject.transform.parent = structuresParent.transform;
+                Castle.castleObj = castleObject;
             }
         }
     }
@@ -120,9 +136,11 @@ public class Terrain : MonoBehaviour
             if ((Stage.Type)currentStage != Stage.Type.Special)
             {
                 int adjustedStage = currentStage < 4 ? currentStage : currentStage - 1;
-                CastleCoords[adjustedStage] = CastleGenerator.DrawCastlePlace(spacing, currentStage, stageRows);
-                List<Vector2> CastleArea = StructureAreaChecker.TilesAround(CastleCoords[adjustedStage].ToArray(), spacing * stageRows);
-                occupedTillesCords.AddRange(CastleArea);
+                castles[adjustedStage] = playersDB.playerDbs[adjustedStage].castle;
+                castles[adjustedStage].mat = playersDB.playerDbs[adjustedStage].material;
+                castles[adjustedStage].castleCords = CastleGenerator.DrawCastlePlace(spacing, currentStage, stageRows);
+                List<Vector2> castleArea = StructureAreaChecker.TilesAround(castles[adjustedStage].castleCords.ToArray(), spacing * stageRows);
+                occupedTillesCords.AddRange(castleArea);
                 var resourcesForStage = resourcesGen.CreateResourcesForStage(occupedTillesCords, currentStage, spacing, stageRows);
 
                 foreach (var resource in resourcesForStage)
@@ -148,9 +166,9 @@ public class Terrain : MonoBehaviour
 
     bool IsTileInCastleCoords(Vector2 newTileCoords)
     {
-        foreach (var castle in CastleCoords)
+        foreach (var castle in castles)
         {
-            if (castle != null && castle.Contains(newTileCoords))
+            if (castle != null && castle.castleCords.Contains(newTileCoords))
             {
                 return true;
             }
@@ -176,20 +194,6 @@ public class Terrain : MonoBehaviour
         return false;
     }
 
-    private void RemoveResource(TerrainResource resource)
-    {
-        if (resource.Coords.Count > 0)
-        {
-            Debug.Log($"{resource.Coords.Count} {resource.Resource.type}");
-            resource.Coords.Pop();
-        }
-        else
-        {
-            Debug.Log("koniec" + resource.Resource.type);
-            _terrainResources = new Stack<TerrainResource>(_terrainResources.Where(r => r != resource));
-        }
-    }
-
     public class TerrainResource
     {
         public Stack<Vector2> Coords { get; set; }
@@ -201,4 +205,5 @@ public class Terrain : MonoBehaviour
             Resource = resource;
         }
     }
+    
 }
