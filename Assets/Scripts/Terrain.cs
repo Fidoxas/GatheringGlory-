@@ -61,7 +61,7 @@ public class Terrain : MonoBehaviour
     
         foreach (var Castle in castles)
         {
-            GameObject castleObject = StructuresCreator.CreateCastle(Castle.castleCords, Castle.nation.castlePrefab, Castle.mat);
+            GameObject castleObject = StructuresCreator.CreateCastle(Castle.castleCords, Castle.nation.castlePrefab, Castle.mat,Castle.pNum);
         
             if (castleObject != null)
             {
@@ -138,6 +138,7 @@ public class Terrain : MonoBehaviour
                 int adjustedStage = currentStage < 4 ? currentStage : currentStage - 1;
                 castles[adjustedStage] = playersDB.playerDbs[adjustedStage].castle;
                 castles[adjustedStage].mat = playersDB.playerDbs[adjustedStage].material;
+                castles[adjustedStage].pNum = playersDB.playerDbs[adjustedStage].pNum;
                 castles[adjustedStage].castleCords = CastleGenerator.DrawCastlePlace(spacing, currentStage, stageRows);
                 List<Vector2> castleArea = StructureAreaChecker.TilesAround(castles[adjustedStage].castleCords.ToArray(), spacing * stageRows);
                 occupedTillesCords.AddRange(castleArea);

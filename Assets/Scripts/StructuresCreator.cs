@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class StructuresCreator : MonoBehaviour
 {
-    public static GameObject CreateCastle(Vector2[] castleCastleCords, GameObject obj, Material mat, int areaLen = 45)
+    public static GameObject CreateCastle(Vector2[] castleCastleCords, GameObject obj, Material mat, Player.Numbers pNum,int areaLen = 45)
     {
         if (castleCastleCords.Length != 4)
         {
@@ -17,7 +17,7 @@ public class StructuresCreator : MonoBehaviour
         Vector3 centroid = new Vector3(centroidX, 0.5f, centroidZ);
 
         GameObject newObject = Instantiate(obj, centroid, obj.transform.rotation);
-
+        newObject.GetComponent<Live>().pNum = pNum;
         MeshRenderer[] meshRenderers = newObject.GetComponentsInChildren<MeshRenderer>();
         foreach (MeshRenderer renderer in meshRenderers)
         {

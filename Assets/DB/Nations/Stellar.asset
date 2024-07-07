@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ac921ddd81d74c4daff2326dd867ee5, type: 3}
   m_Name: Stellar
   m_EditorClassIdentifier: 
-  castlePrefab: {fileID: 443531707920457255, guid: a8f419f26c7367644afedbf4762f9f73, type: 3}
+  castlePrefab: {fileID: 468486283129652344, guid: a8f419f26c7367644afedbf4762f9f73, type: 3}
   kind: 0

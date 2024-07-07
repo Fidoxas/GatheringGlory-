@@ -81,6 +81,17 @@ public class Tile : MonoBehaviour
 
         MeshRenderer renderer = triangleObj.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = mat;
+        triangleObj.AddComponent<MeshCollider>();        
+        int terrainLayer = LayerMask.NameToLayer("Terrain");
+        if (terrainLayer == -1)
+        {
+            Debug.LogError("Layer 'Terrain' does not exist. Please add it in the Layers settings.");
+        }
+        else
+        {
+            triangleObj.layer = terrainLayer;
+        }
+
 
         Debug.Log($"Created triangle with vertices {v0}, {v1}, {v2} and material {mat.name}");
     }

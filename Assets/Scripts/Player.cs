@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 public class Player : MonoBehaviour
 {
     public string pname;
-    public Numbers numbers;
+    public Numbers number;
     public Castle.Type type;
 
     public enum Numbers

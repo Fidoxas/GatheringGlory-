@@ -2,13 +2,7 @@
 
 public class ResourceTile : Tile
 {
-    public new Player.Numbers player;
-    //public new Material mat;
-    //public new Type type = Type.Resource;
     public Resource resource;
-    
-    
-    
    
 
     // public static Material AssignResourceMat(Resource.ResourceType resourceType)

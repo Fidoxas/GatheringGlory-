@@ -9,6 +9,8 @@ public class Castle : ScriptableObject
     public Nation nation;
     public GameObject castleObj;
     public Material mat;
+    public Player.Numbers pNum;
+
     public enum Type
     {
         None = -1,

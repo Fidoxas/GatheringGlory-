@@ -15,7 +15,6 @@ public class Stage : MonoBehaviour
         Transform terrain = transform.Find("terrain");
         foreach (Transform tile in terrain)
         {
-            // Iterujemy przez wszystkie trójkąty w kwadracie
             foreach (Transform triangle in tile)
             {
                 MeshRenderer meshRenderer = triangle.GetComponent<MeshRenderer>();
