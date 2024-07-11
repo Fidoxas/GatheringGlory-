@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1c0a056da271ae4a8470975e35e8c0e, type: 3}
   m_Name: Player 1
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: f88ebecfb384a324d9f1bba21cdbad16, type: 2}
   pNum: 0
   startStage: 0
   castle: {fileID: 11400000, guid: 4568f2ac7e211af48be0bcdc10bab2b1, type: 2}

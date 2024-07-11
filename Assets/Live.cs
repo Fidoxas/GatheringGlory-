@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class Live : MonoBehaviour
 {
-    public Player.Numbers pNum;
+    // public Player.Numbers pNum; // Zmienić na odpowiedni typ enum lub int, jeśli Player.Numbers nie istnieje.
     public int healthPoints = 100;
     [SerializeField] private GameObject healthBar;
     private Camera _cam;
@@ -17,19 +17,19 @@ public class Live : MonoBehaviour
         {
             _cam = player.GetComponentInChildren<Camera>();
         }
-        if (_cam == null)
-        {
-            Debug.LogError("Camera not found as a child of Player object");
-        }
+
         Slider healthBarSlider = healthBar.GetComponent<Slider>();
         if (healthBarSlider != null)
         {
             _healthBarLive = (int)healthBarSlider.value;
         }
-        else
-        {
-            Debug.LogError("HealthBar GameObject does not have a Slider component.");
-        }
+
+        LoadPnumToShader();
+    }
+
+    private void LoadPnumToShader()
+    {
+       
     }
 
     void Update()
@@ -53,10 +53,9 @@ public class Live : MonoBehaviour
     public void TakeDamage(int damage)
     {
         healthPoints -= damage;
-        if (healthPoints < 0)
+        if (healthPoints <= 0)
         {
-            healthPoints = 0;
-            // Handle death or other logic here
+            gameObject.SetActive(false);
         }
     }
 }

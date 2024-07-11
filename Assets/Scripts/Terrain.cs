@@ -34,7 +34,7 @@ public class Terrain : MonoBehaviour
                 {
                     Tile.CreateTile(new[] { vertices[0], vertices[2], vertices[1] },
                         new[] { vertices[1], vertices[2], vertices[3] }, this.transform, newTileCoords,
-                        Tile.Type.Castle, currentPlayerDB.pNum,null, currentPlayerDB.material,currentPlayerDB.castle.nation.kind);
+                        Tile.Type.Castle, currentPlayerDB.pNum,null, playersDB.material,currentPlayerDB.castle.nation.kind);
                 }
                 else if (IsTileInResourceCoords(newTileCoords, out TerrainResource resource))
                 {
@@ -52,16 +52,16 @@ public class Terrain : MonoBehaviour
             
         }
 
-        CreateStructures();
+        CreateStructures(stageRows *spacing);
     }
 
-    private void CreateStructures()
+    private void CreateStructures(int Arealen)
     {
         GameObject structuresParent = new GameObject("Structures");
     
         foreach (var Castle in castles)
         {
-            GameObject castleObject = StructuresCreator.CreateCastle(Castle.castleCords, Castle.nation.castlePrefab, Castle.mat,Castle.pNum);
+            GameObject castleObject = StructuresCreator.CreateCastle(Castle.castleCords, Castle.nation.castlePrefab,Castle.pNum,Arealen);
         
             if (castleObject != null)
             {
@@ -137,7 +137,7 @@ public class Terrain : MonoBehaviour
             {
                 int adjustedStage = currentStage < 4 ? currentStage : currentStage - 1;
                 castles[adjustedStage] = playersDB.playerDbs[adjustedStage].castle;
-                castles[adjustedStage].mat = playersDB.playerDbs[adjustedStage].material;
+                castles[adjustedStage].mat = playersDB.material;
                 castles[adjustedStage].pNum = playersDB.playerDbs[adjustedStage].pNum;
                 castles[adjustedStage].castleCords = CastleGenerator.DrawCastlePlace(spacing, currentStage, stageRows);
                 List<Vector2> castleArea = StructureAreaChecker.TilesAround(castles[adjustedStage].castleCords.ToArray(), spacing * stageRows);

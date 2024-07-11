@@ -1,16 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DmgDealer : MonoBehaviour
 {
-    public Player.Numbers pNum;
-    [SerializeField] private int _damage = 10; 
+    private Player.Numbers pNum;
+    [SerializeField] private int _damage = 10;
+
+    private void Start()
+    {
+        pNum = GetComponent<UnitId>().pNum;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
         Live live = other.GetComponent<Live>();
-        if (live != null && live.pNum != pNum)
+        UnitId id = other.GetComponent<UnitId>();
+        if (live != null && id != null && id.pNum != pNum)
         {
             Debug.Log("dmg to " + other.name);
             DealDamage(live);

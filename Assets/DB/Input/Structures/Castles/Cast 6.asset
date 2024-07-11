@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Cast 6
   m_EditorClassIdentifier: 
   castleCords:
-  - {x: 5, y: 6}
-  - {x: 6, y: 6}
-  - {x: 5, y: 5}
-  - {x: 6, y: 5}
+  - {x: 10, y: 5}
+  - {x: 11, y: 5}
+  - {x: 10, y: 4}
+  - {x: 11, y: 4}
   nation: {fileID: 11400000, guid: 5d5d9ef237763a24abace142f3e73769, type: 2}
   castleObj: {fileID: 0}
+  mat: {fileID: 2100000, guid: 023a6466b94f774458a56f3b4bda38ec, type: 2}
+  pNum: 5

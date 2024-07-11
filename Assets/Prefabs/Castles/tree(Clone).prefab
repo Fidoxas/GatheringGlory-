@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 023a6466b94f774458a56f3b4bda38ec, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -246,7 +246,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 023a6466b94f774458a56f3b4bda38ec, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -387,9 +387,10 @@ GameObject:
   - component: {fileID: 2251691762706713567}
   - component: {fileID: 7123834765856187615}
   - component: {fileID: 6974277663007192873}
+  - component: {fileID: 8614262768661493631}
   m_Layer: 0
   m_Name: tree(Clone)
-  m_TagString: Untagged
+  m_TagString: LivingObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -423,7 +424,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94948904abe62f747b9ca6258d1f002e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pNum: 0
   healthPoints: 100
   healthBar: {fileID: 8690983777792945375}
 --- !u!65 &6974277663007192873
@@ -447,6 +447,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3.3694086, y: 4.409549, z: 3.264986}
   m_Center: {x: -0.064551175, y: 1.7047746, z: -0.025855541}
+--- !u!114 &8614262768661493631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2455847061192484284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40a19cb34613f45489cf0dac246dca2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pNum: 0
 --- !u!1 &5106915482877625438
 GameObject:
   m_ObjectHideFlags: 0

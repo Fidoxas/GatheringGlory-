@@ -279,7 +279,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 023a6466b94f774458a56f3b4bda38ec, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -414,9 +414,10 @@ GameObject:
   - component: {fileID: 615785716710249102}
   - component: {fileID: 3359072759338181265}
   - component: {fileID: 2350066068703605016}
+  - component: {fileID: 2330686950636297638}
   m_Layer: 0
   m_Name: Vulcano
-  m_TagString: Untagged
+  m_TagString: LivingObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -450,7 +451,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94948904abe62f747b9ca6258d1f002e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pNum: 0
   healthPoints: 100
   healthBar: {fileID: 8237677928212383037}
 --- !u!65 &2350066068703605016
@@ -474,6 +474,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.0490093, y: 1.7247559, z: 2.0840216}
   m_Center: {x: -0.01493001, y: 0.77873415, z: 0.0040614605}
+--- !u!114 &2330686950636297638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7658424195199004081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40a19cb34613f45489cf0dac246dca2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pNum: 0
 --- !u!1 &8237677928212383037
 GameObject:
   m_ObjectHideFlags: 0

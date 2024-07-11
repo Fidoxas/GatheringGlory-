@@ -8,5 +8,6 @@ namespace ScriptablesOBJ
    public class PlayersDB : ScriptableObject
    {
       public PlayerDB[] playerDbs;
+      public Material material;
    }
 }

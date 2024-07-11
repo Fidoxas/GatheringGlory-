@@ -1,5 +1,6 @@
 using System;
 using ScriptablesOBJ;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
@@ -40,7 +41,8 @@ public class Tile : MonoBehaviour
             var castleTileSc = tileObj.AddComponent<CastleTile>();
             castleTileSc.nation = nation;
             tileSc = castleTileSc;
-            tileSc.player = occupator;
+            tileObj.AddComponent<UnitId>().pNum = occupator;
+
         }
         else if (type == Type.Resource)
         {
