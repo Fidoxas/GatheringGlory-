@@ -66,10 +66,10 @@ public class Tile : MonoBehaviour
         Debug.Log($"Created tile of type {type} at coordinates {coords} with material {mat.name}");
     }
 
-    public static void CreateTriangle(Transform transform, Vector3 v0, Vector3 v1, Vector3 v2, Material mat)
+    public static void CreateTriangle(Transform parentTransform, Vector3 v0, Vector3 v1, Vector3 v2, Material material)
     {
         GameObject triangleObj = new GameObject("Triangle");
-        triangleObj.transform.SetParent(transform);
+        triangleObj.transform.SetParent(parentTransform);
         triangleObj.transform.localPosition = Vector3.zero;
         triangleObj.transform.localRotation = Quaternion.identity;
 
@@ -82,8 +82,10 @@ public class Tile : MonoBehaviour
         meshFilter.mesh = mesh;
 
         MeshRenderer renderer = triangleObj.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = mat;
-        triangleObj.AddComponent<MeshCollider>();        
+        renderer.sharedMaterial = material;
+
+        triangleObj.AddComponent<MeshCollider>();
+
         int terrainLayer = LayerMask.NameToLayer("Terrain");
         if (terrainLayer == -1)
         {
@@ -94,7 +96,6 @@ public class Tile : MonoBehaviour
             triangleObj.layer = terrainLayer;
         }
 
-
-        Debug.Log($"Created triangle with vertices {v0}, {v1}, {v2} and material {mat.name}");
+        Debug.Log($"Created triangle with vertices {v0}, {v1}, {v2} and material {material.name}");
     }
 }

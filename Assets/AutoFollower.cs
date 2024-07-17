@@ -49,7 +49,7 @@ public class AutoFollower : MonoBehaviour
         }
         else if (target != null)
         {
-            GetComponent<AutoAttacker>().SetTarget(target);
+            GetComponentInChildren<AutoAttacker>().SetTarget(target);
             MoveTowardsTarget();
         }
     }

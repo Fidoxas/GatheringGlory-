@@ -7,10 +7,11 @@ public class DmgDealer : MonoBehaviour
 {
     private Player.Numbers pNum;
     [SerializeField] private int _damage = 10;
+    
 
     private void Start()
     {
-        pNum = GetComponent<UnitId>().pNum;
+        pNum = GetComponentInParent<UnitId>().pNum;
     }
 
     private void OnTriggerEnter(Collider other)

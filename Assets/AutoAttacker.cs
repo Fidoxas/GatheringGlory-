@@ -13,7 +13,7 @@ public class AutoAttacker : MonoBehaviour
     private void Start()
     {
         _autoFollower = GetComponent<AutoFollower>();
-        pNum = GetComponent<UnitId>().pNum;
+        pNum = GetComponentInParent<UnitId>().pNum;
     }
 
     private void Update()
@@ -32,7 +32,6 @@ public class AutoAttacker : MonoBehaviour
         {
             if (live == _currentTarget)
             {
-                Debug.Log("Starting damage to " + other.name);
                 if (_damageCoroutine == null)
                 {
                     _damageCoroutine = StartCoroutine(DealDamageOverTime(live));
@@ -49,7 +48,6 @@ public class AutoAttacker : MonoBehaviour
         {
             if (live == _currentTarget)
             {
-                Debug.Log("Stopping damage to " + other.name);
                 if (_damageCoroutine != null)
                 {
                     StopCoroutine(_damageCoroutine);
@@ -83,7 +81,6 @@ public class AutoAttacker : MonoBehaviour
                 _damageCoroutine = null;
             }
             _currentTarget = target;
-            Debug.Log("New target set: " + target.name);
         }
     }
 }
