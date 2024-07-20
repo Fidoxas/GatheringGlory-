@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,8 +6,16 @@ public class UnitController : MonoBehaviour
 {
     public LayerMask groundLayer;
     public LayerMask unitLayer;
-    private List<Unit> _selectedUnits = new List<Unit>();
-    private bool Selecting = false;
+    private HashSet<Unit> _selectedUnits = new HashSet<Unit>();
+
+    private enum State
+    {
+        Idle,
+        Selecting,
+        GivingOrders
+    }
+
+    private State _currentState = State.Idle;
 
     void Update()
     {
@@ -15,65 +24,89 @@ public class UnitController : MonoBehaviour
 
     void HandleInput()
     {
-        if (Input.GetButtonDown("Fire1"))
+        switch (_currentState)
         {
-            Selecting = true;
-            
-        }
-        if (Input.GetButtonUp("Fire1"))
-        {
-            Selecting = false;
-        }
-
-        if (Selecting)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, unitLayer))
-            {
-                Unit unit = hit.collider.GetComponent<Unit>();
-                if (unit != null)
+            case State.Idle:
+                if (Input.GetButtonDown("Fire1"))
                 {
-                    unit.ToggleSelect();
+                    _currentState = State.Selecting;
+                    StartCoroutine(SelectUnits());
+                }
+                break;
 
-                    if (unit.isSelected)
+            case State.GivingOrders:
+                if (Input.GetButtonDown("Fire1"))
+                {
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit;
+                    if (Physics.Raycast(ray, out hit, Mathf.Infinity, unitLayer))
                     {
-                        _selectedUnits.Add(unit);
+                        UnitId targetUnit = hit.collider.GetComponent<UnitId>();
+                        if (targetUnit != null)
+                        {
+                            FollowSelectedUnits(targetUnit);
+                            _currentState = State.Idle;
+                        }
                     }
-                    else
+                    else if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer))
                     {
-                        _selectedUnits.Remove(unit);
+                        MoveSelectedUnits(hit.point);
+                        _currentState = State.Idle;
                     }
                 }
-            }
+                break;
         }
-        if (_selectedUnits.Count != 0 && Input.GetButtonDown("Fire1"))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+    }
 
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer))
+    IEnumerator SelectUnits()
+    {
+        while (Input.GetButton("Fire1"))
+        {
+            HandleSelection();
+            yield return null; // wait until the next frame
+        }
+
+        _currentState = _selectedUnits.Count > 0 ? State.GivingOrders : State.Idle;
+    }
+
+    void HandleSelection()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, unitLayer))
+        {
+            Unit unit = hit.collider.GetComponent<Unit>();
+            if (unit != null)
             {
-                MoveSelectedUnits(hit.point);
+                unit.ToggleSelect();
+                if (unit.isSelected)
+                {
+                    _selectedUnits.Add(unit);
+                }
+                else
+                {
+                    _selectedUnits.Remove(unit);
+                }
             }
         }
     }
 
     void MoveSelectedUnits(Vector3 destination)
     {
-        List<Unit> unitsToDeselect = new List<Unit>();
-
         foreach (Unit unit in _selectedUnits)
         {
-            unit.MoveTo(destination);
-            unitsToDeselect.Add(unit);
-        }
-
-        foreach (Unit unit in unitsToDeselect)
-        {
+            unit.MoveToGround(destination);
             unit.DeSelect();
-            _selectedUnits.Remove(unit);
         }
+        _selectedUnits.Clear();
+    }
+
+    void FollowSelectedUnits(UnitId target)
+    {
+        foreach (Unit unit in _selectedUnits)
+        {
+            unit.FollowUnit(target);
+            unit.DeSelect();
+        }
+        _selectedUnits.Clear();
     }
 }
