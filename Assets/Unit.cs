@@ -4,13 +4,12 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
     public float speed = 5f;
-    [SerializeField] private GameObject Checker;
+    [SerializeField] private GameObject checker;
     [SerializeField] private GameObject attackArea;
     [SerializeField] private float range;
-    private Vector3 targetPosition;
-    private Transform targetUnit;
+    private Vector3 _targetPosition;
+    private Transform _targetUnit;
     public bool isSelected = false;
-    private Color originalColor;
 
     private enum State
     {
@@ -20,54 +19,51 @@ public class Unit : MonoBehaviour
         Auto
     }
 
-    private State currentState = State.Idle;
-    private Coroutine currentCoroutine;
+    private State _currentState = State.Idle;
+    private Coroutine _currentCoroutine;
 
     void Awake()
     {
         attackArea.transform.localScale = new Vector3(2 * range, attackArea.transform.localScale.y, 2 * range);
-        originalColor = GetComponent<Renderer>().material.color;
     }
 
     public void MoveToGround(Vector3 destination)
     {
-        targetPosition = destination;
-        targetUnit = null;  // Clear any target unit
-        currentState = State.Moving;
-        Debug.Log($"MoveToGround called with destination: {destination}");
+        _targetPosition = destination;
+        _targetUnit = null;
+        _currentState = State.Moving;
 
-        if (currentCoroutine != null)
+        if (_currentCoroutine != null)
         {
-            StopCoroutine(currentCoroutine);
+            StopCoroutine(_currentCoroutine);
         }
-        currentCoroutine = StartCoroutine(MoveToGroundTarget());
+        _currentCoroutine = StartCoroutine(MoveToGroundTarget());
     }
 
     public void FollowUnit(UnitId target)
     {
-        targetUnit = target.transform;
-        currentState = State.Following;
-        Debug.Log($"FollowUnit called with target: {target.name}");
+        Debug.Log("Follow unit");
+        attackArea.GetComponent<UnitRangeContr>()._currentTarget = target;
+        attackArea.GetComponent<UnitRangeContr>().inTargetRange=false;
+        _targetUnit = target.transform;
+        _currentState = State.Following;
 
-        if (currentCoroutine != null)
+        if (_currentCoroutine != null)
         {
-            StopCoroutine(currentCoroutine);
+            StopCoroutine(_currentCoroutine);
         }
-        currentCoroutine = StartCoroutine(FollowUnitTarget());
+        _currentCoroutine = StartCoroutine(FollowUnitTarget());
     }
 
     private IEnumerator MoveToGroundTarget()
     {
-        Debug.Log("Started moving to ground target");
-
-        while (currentState == State.Moving)
+        while (_currentState == State.Moving)
         {
             float step = speed * Time.deltaTime;
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
-            float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
-            Debug.Log($"Current position: {transform.position}, Target position: {targetPosition}, Distance: {distanceToTarget}");
+            transform.position = Vector3.MoveTowards(transform.position, _targetPosition, step);
+            float distanceToTarget = Vector3.Distance(transform.position, _targetPosition);
 
-            if (distanceToTarget < 0.5f) // Using a default small distance for ground movement
+            if (distanceToTarget < 0.5f) // Using a small distance threshold for ground movement
             {
                 StopMoving();
             }
@@ -77,53 +73,42 @@ public class Unit : MonoBehaviour
 
     private IEnumerator FollowUnitTarget()
     {
-        Debug.Log("Started following unit target");
-
-        while (currentState == State.Following)
+        while (_currentState == State.Following)
         {
-            if (targetUnit != null)
+            if (_targetUnit != null)
             {
-                targetPosition = targetUnit.position;
-                float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
-                Debug.Log($"Following unit. Current position: {transform.position}, Target position: {targetPosition}, Distance: {distanceToTarget}");
+                _targetPosition = _targetUnit.position;
 
-                if (distanceToTarget > range)
+                if (!attackArea.GetComponent<UnitRangeContr>().inTargetRange)
                 {
                     float step = speed * Time.deltaTime;
-                    transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
+                    transform.position = Vector3.MoveTowards(transform.position, _targetPosition, step);
                 }
             }
-            else
-            {
-                Debug.LogWarning("Target unit is null in FollowUnitTarget coroutine.");
-            }
 
-            yield return null; 
+            yield return null;
         }
     }
 
     private bool isMoving()
     {
-        return currentState == State.Moving || currentState == State.Following;
+        return _currentState == State.Moving || _currentState == State.Following;
     }
 
     public void StopMoving()
     {
-        currentState = State.Idle;
-        Debug.Log("Stopped moving");
+        _currentState = State.Idle;
     }
 
     public void ToggleSelect()
     {
         isSelected = !isSelected;
-        Checker.SetActive(isSelected);
-        Debug.Log($"ToggleSelect called. isSelected: {isSelected}");
+        checker.SetActive(isSelected);
     }
 
     public void DeSelect()
     {
         isSelected = false;
-        Checker.SetActive(isSelected);
-        Debug.Log("DeSelect called");
+        checker.SetActive(isSelected);
     }
 }

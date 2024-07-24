@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4202982910932378501}
   - component: {fileID: 2987349887208738211}
   - component: {fileID: 3126224579471077139}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 8523845291845607957}
   - component: {fileID: 2629320505282511637}
   - component: {fileID: 4478859742623859118}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -196,7 +196,7 @@ GameObject:
   - component: {fileID: 3523244585178262064}
   - component: {fileID: 2872273190847040060}
   - component: {fileID: 6777849177825558513}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cone.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279,7 +279,7 @@ GameObject:
   - component: {fileID: 8908632699117326995}
   - component: {fileID: 3997987423442000958}
   - component: {fileID: 7744034040094541784}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -352,7 +352,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3927046197711327582}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Castle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -388,7 +388,7 @@ GameObject:
   - component: {fileID: 7123834765856187615}
   - component: {fileID: 6974277663007192873}
   - component: {fileID: 8614262768661493631}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: tree(Clone)
   m_TagString: LivingObj
   m_Icon: {fileID: 0}
@@ -471,7 +471,7 @@ GameObject:
   - component: {fileID: 1801290772028302978}
   - component: {fileID: 7406695795734927846}
   - component: {fileID: 1979291056822990048}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -544,7 +544,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4592051774161997418}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -581,7 +581,7 @@ GameObject:
   m_Component:
   - component: {fileID: 434801119830516174}
   - component: {fileID: 859538343653524775}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

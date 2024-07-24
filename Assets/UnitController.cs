@@ -63,7 +63,7 @@ public class UnitController : MonoBehaviour
         while (Input.GetButton("Fire1"))
         {
             HandleSelection();
-            yield return null; // wait until the next frame
+            yield return null; 
         }
 
         _currentState = _selectedUnits.Count > 0 ? State.GivingOrders : State.Idle;
