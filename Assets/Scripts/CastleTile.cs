@@ -4,7 +4,7 @@ using UnityEngine.Serialization;
 public class CastleTile : Tile
 {
     public Castle.Type nation;
-
+    
     // public static bool CanGenerate(Vector2 newCastleCoords, Vector2 castleCoords1, Vector2 castleCoords2, int minSpace)
     // {
     //     Debug.Log($"Border Castle 1 Coords: {castleCoords1}");

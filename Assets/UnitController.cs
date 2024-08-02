@@ -6,7 +6,8 @@ public class UnitController : MonoBehaviour
 {
     public LayerMask groundLayer;
     public LayerMask unitLayer;
-    private HashSet<Unit> _selectedUnits = new HashSet<Unit>();
+    private List<Unit> _selectedUnits = new List<Unit>();
+    private List<Target> _targetsForUnits = new List<Target>();
 
     private enum State
     {
@@ -63,7 +64,7 @@ public class UnitController : MonoBehaviour
         while (Input.GetButton("Fire1"))
         {
             HandleSelection();
-            yield return null; 
+            yield return null;
         }
 
         _currentState = _selectedUnits.Count > 0 ? State.GivingOrders : State.Idle;
@@ -72,17 +73,18 @@ public class UnitController : MonoBehaviour
     void HandleSelection()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, unitLayer))
         {
             Unit unit = hit.collider.GetComponent<Unit>();
             if (unit != null)
             {
                 unit.ToggleSelect();
-                if (unit.isSelected)
+                if (unit.isSelected && !_selectedUnits.Contains(unit))
                 {
                     _selectedUnits.Add(unit);
                 }
-                else
+                else if (!unit.isSelected && _selectedUnits.Contains(unit))
                 {
                     _selectedUnits.Remove(unit);
                 }
@@ -94,6 +96,7 @@ public class UnitController : MonoBehaviour
     {
         foreach (Unit unit in _selectedUnits)
         {
+            RemoveUnitsFromOldTargets(unit);
             unit.MoveToGround(destination);
             unit.DeSelect();
         }
@@ -102,11 +105,51 @@ public class UnitController : MonoBehaviour
 
     void FollowSelectedUnits(UnitId target)
     {
+        Target targetObj = _targetsForUnits.Find(t => t.TargetId == target);
+
+        if (targetObj == null)
+        {
+            targetObj = new Target(target, new List<Unit>());
+            _targetsForUnits.Add(targetObj);
+        }
+
         foreach (Unit unit in _selectedUnits)
         {
+            RemoveUnitsFromOldTargets(unit);
             unit.FollowUnit(target);
+            targetObj.Units.Add(unit);
             unit.DeSelect();
         }
+
         _selectedUnits.Clear();
+        target.SetAsTarget();
+    }
+
+    void RemoveUnitsFromOldTargets(Unit unit)
+    {
+        foreach (var target in _targetsForUnits)
+        {
+            if (target.Units.Contains(unit))
+            {
+                target.Units.Remove(unit);
+                if (target.Units.Count == 0)
+                {
+                    target.TargetId.DeselectTarget();
+                    _targetsForUnits.Remove(target);
+                    break;
+                }
+            }
+        }
+    }
+}
+public class Target
+{
+    public UnitId TargetId { get; set; }
+    public List<Unit> Units { get; set; }
+
+    public Target(UnitId target, List<Unit> units)
+    {
+        TargetId = target;
+        Units = units;
     }
 }

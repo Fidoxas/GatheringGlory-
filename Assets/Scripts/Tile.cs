@@ -41,7 +41,7 @@ public class Tile : MonoBehaviour
             var castleTileSc = tileObj.AddComponent<CastleTile>();
             castleTileSc.nation = nation;
             tileSc = castleTileSc;
-            tileObj.AddComponent<UnitId>().pNum = occupator;
+            tileObj.AddComponent<TileId>().pNum = occupator;
 
         }
         else if (type == Type.Resource)
@@ -63,7 +63,6 @@ public class Tile : MonoBehaviour
         CreateTriangle(tileObj.transform, triangle1[0], triangle1[1], triangle1[2], tileSc.mat);
         CreateTriangle(tileObj.transform, triangle2[0], triangle2[1], triangle2[2], tileSc.mat);
 
-        Debug.Log($"Created tile of type {type} at coordinates {coords} with material {mat.name}");
     }
 
     public static void CreateTriangle(Transform parentTransform, Vector3 v0, Vector3 v1, Vector3 v2, Material material)
@@ -95,7 +94,5 @@ public class Tile : MonoBehaviour
         {
             triangleObj.layer = terrainLayer;
         }
-
-        Debug.Log($"Created triangle with vertices {v0}, {v1}, {v2} and material {material.name}");
     }
 }

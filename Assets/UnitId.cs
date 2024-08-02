@@ -1,63 +1,55 @@
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class UnitId : MonoBehaviour
 {
     public Player.Numbers pNum;
-    private Material teamMaterial; // Materiał z shaderem "Custom/Teamer"
-    private bool materialUpdated = false;
-    private PlayerManager playerManager;
-
+    public GameObject playerCircle;
+    public GameObject actionCircle;
+    public GameObject targetCircle;
+    private bool _materialUpdated = false;
+    private PlayerManager _playerManager;
+    private List<GameObject> _focussed = new List<GameObject>();
     public void SetSide(Player.Numbers id)
     {
         pNum = id;
-        materialUpdated = false; // Umożliwia ponowną aktualizację materiału
+        _materialUpdated = false;
         UpdateMaterial();
     }
 
     private void UpdateMaterial()
     {
-        if (materialUpdated) return;
+        if (_materialUpdated) return;
 
-        MeshRenderer[] meshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();
-        foreach (MeshRenderer renderer in meshRenderers)
+        _playerManager = FindObjectOfType<PlayerManager>();
+        if (playerCircle != null && playerCircle.GetComponent<Renderer>() != null)
         {
-            Material[] materials = renderer.materials; // Pobranie kopii tablicy materiałów
-            for (int i = 0; i < materials.Length; i++)
+            Material material = playerCircle.GetComponent<SpriteRenderer>().material;
+            if (material.shader.name == "Custom/Teamer")
             {
-                Material material = materials[i];
-                if (material.shader.name == "Standard")
-                {
-                    if (teamMaterial == null)
-                    {
-                        if (playerManager == null)
-                        {
-                            playerManager = FindObjectOfType<PlayerManager>();
-                        }
-                        if (playerManager != null)
-                        {
-                            teamMaterial = playerManager.GetTeamMaterial();
-                        }
-                    }
-
-                    if (teamMaterial != null)
-                    {
-                        materials[i] = teamMaterial;
-                    }
-                }
-
-                if (materials[i].shader.name == "Custom/Teamer")
-                {
-                    materials[i].SetInt("_PlayerNumber", (int)pNum);
-                }
+                material.SetInt("_PlayerNumber", (int)pNum);
             }
-            renderer.materials = materials; // Przypisanie zaktualizowanej tablicy materiałów z powrotem do renderera
         }
 
-        materialUpdated = true; // Flaga oznaczająca, że materiały zostały zaktualizowane
+        _materialUpdated = true;
     }
 
+    public void SetAsTarget()
+    {
+        targetCircle.SetActive(true);
+    }
+
+    public void DeselectTarget()
+    {
+        targetCircle.SetActive(false);
+    }
     void Start()
     {
+        actionCircle.SetActive(false);
+        targetCircle.SetActive(false);
         UpdateMaterial();
     }
+    
 }

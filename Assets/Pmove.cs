@@ -4,23 +4,34 @@ using UnityEngine;
 
 public class Pmove : MonoBehaviour
 {
-    public float speed = 6.0f; // Prędkość ruchu
-
+    public float moveSpeed = 5f;
     private Rigidbody rb;
+    private Vector3 movement;
+    
 
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-    void Update()
+    private void Update()
     {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
+        // Pobierz wejścia od gracza
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveZ = Input.GetAxisRaw("Vertical");
 
-        Vector3 move = transform.right * moveHorizontal + transform.forward * moveVertical;
-        move *= speed * Time.deltaTime;
+        movement = new Vector3(moveX, 0, moveZ).normalized;
 
-        rb.MovePosition(rb.position + move);
+        if (movement != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(movement);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        Vector3 newPosition = rb.position + movement * moveSpeed * Time.fixedDeltaTime;
+        rb.MovePosition(newPosition);
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ScriptablesOBJ;
@@ -13,19 +14,20 @@ public class Terrain : MonoBehaviour
     public PlayersDB playersDB;
     [SerializeField] ResourcesGen resourcesGen;
 
-    public void CreateTerrain(int stageRows, int spacing, float seed)
+    public IEnumerator CreateTerrain(int stageRows, int spacing, float seed)
     {
         Vector3 arenaPos = gameObject.transform.localPosition;
         PrepareStructures(spacing, stageRows);
 
         var flatVertices = FindFlatVertices(0.5f, spacing, stageRows);
+        Debug.Log(flatVertices.ElementAtOrDefault(1));
         for (int y = 0; y < spacing * stageRows; y++)
         {
-            int yI = spacing * stageRows - 1 - y;
+            // int yI = spacing * stageRows - 1 - y;
             for (int x = 0; x < spacing * stageRows; x++)
             {
                 var newTileCoords = new Vector2(x, y);
-                Vector3[] vertices = GenerateVertices(x, yI, flatVertices, arenaPos, seed);
+                Vector3[] vertices = GenerateVertices(x, y, flatVertices, arenaPos, seed);
 
                 var currentStage = StageChecker.CheckCurrentStage(newTileCoords, spacing, stageRows);
                 PlayerDB currentPlayerDB = Player.CheckCurrentPByStage(currentStage, playersDB);
@@ -49,9 +51,8 @@ public class Terrain : MonoBehaviour
                         Tile.Type.Neutral,Player.Numbers.None, null, null,Castle.Type.None);
                 }
             }
-            
         }
-
+        yield return new WaitForSeconds(0.001f);
         CreateStructures(stageRows *spacing);
     }
 
@@ -76,17 +77,16 @@ public class Terrain : MonoBehaviour
         var flatVerts = new List<Vector2>();
         for (int y = 0; y < spacing * stageRows; y++)
         {
-            int yI = spacing * stageRows - 1 - y;
             for (int x = 0; x < spacing * stageRows; x++)
             {
                 var newTileCoords = new Vector2(x, y);
                 Vector3[] vertices = new Vector3[4];
                 if (occupedTillesCords.Contains(newTileCoords))
                 {
-                    vertices[0] = new Vector3(x, flatHeight, yI);
-                    vertices[1] = new Vector3(x + 1, flatHeight, yI);
-                    vertices[2] = new Vector3(x, flatHeight, yI + 1);
-                    vertices[3] = new Vector3(x + 1, flatHeight, yI + 1);
+                    vertices[0] = new Vector3(x, flatHeight, y);
+                    vertices[1] = new Vector3(x + 1, flatHeight, y);
+                    vertices[2] = new Vector3(x, flatHeight, y + 1);
+                    vertices[3] = new Vector3(x + 1, flatHeight, y + 1);
 
                     foreach (Vector3 vert in vertices)
                     {
@@ -140,27 +140,31 @@ public class Terrain : MonoBehaviour
                 castles[adjustedStage].mat = playersDB.material;
                 castles[adjustedStage].pNum = playersDB.playerDbs[adjustedStage].pNum;
                 castles[adjustedStage].castleCords = CastleGenerator.DrawCastlePlace(spacing, currentStage, stageRows);
-                List<Vector2> castleArea = StructureAreaChecker.TilesAround(castles[adjustedStage].castleCords.ToArray(), spacing * stageRows);
+                Debug.Log(castles[adjustedStage].castleCords[0].y + " " + adjustedStage + "");
+                List<Vector2> castleArea =
+                    StructureAreaChecker.TilesAround(castles[adjustedStage].castleCords.ToArray(), spacing * stageRows);
                 occupedTillesCords.AddRange(castleArea);
-                var resourcesForStage = resourcesGen.CreateResourcesForStage(occupedTillesCords, currentStage, spacing, stageRows);
+                Debug.Log(castleArea.ElementAtOrDefault(0).y + "castle area");
+                var resourcesForStage =
+                    resourcesGen.CreateResourcesForStage(occupedTillesCords, currentStage, spacing, stageRows);
 
-                foreach (var resource in resourcesForStage)
-                {
-                    _terrainResources.Push(resource);
-                    List<Vector2> resourceCoords = new List<Vector2> { resource.Coords.Peek() };
-                    List<Vector2> resourceArea = StructureAreaChecker.TilesAround(resourceCoords.ToArray(), spacing * stageRows);
-                    occupedTillesCords.AddRange(resourceArea);
+                    foreach (var resource in resourcesForStage)
+                    {
+                        _terrainResources.Push(resource);
+                        List<Vector2> resourceCoords = new List<Vector2> { resource.Coords.Peek() };
+                        List<Vector2> resourceArea = StructureAreaChecker.TilesAround(resourceCoords.ToArray(), spacing * stageRows);
+                        occupedTillesCords.AddRange(resourceArea);
+                    }
                 }
-            }
-            else if ((Stage.Type)currentStage == Stage.Type.Special)
-            {
+                else if ((Stage.Type)currentStage == Stage.Type.Special)
+                {
                 var specialResource = resourcesGen.GenerateBestResource(occupedTillesCords, currentStage, spacing);
                 _terrainResources.Push(specialResource);
                 Vector2[] specialResourceCoords = specialResource.Coords.ToArray();
                 Array.Reverse(specialResourceCoords);
                 Debug.Log("DLUGOSC " + specialResourceCoords.Length);
                 List<Vector2> specialResourceArea = StructureAreaChecker.TilesAround(specialResourceCoords, spacing * stageRows);
-                occupedTillesCords.AddRange(specialResourceArea);
+                    occupedTillesCords.AddRange(specialResourceArea);
             }
         }
     }

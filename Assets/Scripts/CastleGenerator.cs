@@ -24,9 +24,10 @@ public class CastleGenerator : MonoBehaviour
             }
         }
         // return castleAreaCords.ToArray();
+        
         return castleCoords.ToArray();
     }
-     private static (Vector2[], Range, Range) SetCastleArea(int stage, int stageRows, int spacing, int borderSpace = 3)
+     private static (Vector2[], Range, Range) SetCastleArea(int stage, int stageRows, int spacing, int borderSpace = 5)
     {
 
         int leftUpCorner = 0;

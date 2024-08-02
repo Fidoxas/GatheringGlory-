@@ -10,9 +10,8 @@ public class StructuresCreator : MonoBehaviour
             return null;
         }
 
-        Vector2[] convertedCords = CoordinatesConver.ConvertCoords(castleCastleCords, areaLen);
-        float centroidX = convertedCords[1].x;
-        float centroidZ = convertedCords[1].y;
+        float centroidX = castleCastleCords[1].x;
+        float centroidZ = castleCastleCords[2].y;
 
         Vector3 centroid = new Vector3(centroidX, 0.5f, centroidZ);
 

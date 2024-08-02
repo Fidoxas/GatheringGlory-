@@ -5,6 +5,7 @@ public class Unit : MonoBehaviour
 {
     public float speed = 5f;
     [SerializeField] private GameObject checker;
+    [SerializeField] private Material Circle;
     [SerializeField] private GameObject attackArea;
     [SerializeField] private float range;
     private Vector3 _targetPosition;
@@ -63,7 +64,7 @@ public class Unit : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, _targetPosition, step);
             float distanceToTarget = Vector3.Distance(transform.position, _targetPosition);
 
-            if (distanceToTarget < 0.5f) // Using a small distance threshold for ground movement
+            if (distanceToTarget < 0.5f) 
             {
                 StopMoving();
             }
@@ -102,13 +103,19 @@ public class Unit : MonoBehaviour
 
     public void ToggleSelect()
     {
-        isSelected = !isSelected;
-        checker.SetActive(isSelected);
+        if (!isSelected)
+        {
+            isSelected = true;
+            checker.SetActive(isSelected);
+        }
     }
 
     public void DeSelect()
     {
-        isSelected = false;
-        checker.SetActive(isSelected);
+        if (isSelected)
+        {
+            isSelected = false;
+            checker.SetActive(isSelected);
+        }
     }
 }
