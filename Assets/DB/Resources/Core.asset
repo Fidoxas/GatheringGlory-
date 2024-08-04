@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Core
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 1452043c9d4e53d45904c51b16f412e6, type: 2}
-  type: 3
+  type: 4
+  resourceSourcePref: {fileID: 6849667295804468414, guid: c9c6fb3fb102756438853eb5145d6274, type: 3}

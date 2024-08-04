@@ -7,6 +7,6 @@ namespace ScriptablesOBJ
     public class Nation : ScriptableObject
     {
         public GameObject castlePrefab;
-        [FormerlySerializedAs("nation")] public Castle.Type kind;
+        [FormerlySerializedAs("nation")] public CastleSO.Type kind;
     }
 }

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 383800df6cf79e84dbf81b5e8aae90cb, type: 3}
+  m_Name: T1Testing
+  m_EditorClassIdentifier: 
+  tier: 1
+  prefab: {fileID: 6577381953484108235, guid: afbb4e71c108f4249aa7683a07191b50, type: 3}
+  resourceToMake: {fileID: 11400000, guid: 401a7476473ce8241ae2518bf391868b, type: 2}
+  price: 3

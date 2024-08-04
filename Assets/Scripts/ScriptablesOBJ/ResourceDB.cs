@@ -3,11 +3,11 @@ using UnityEngine;
 namespace ScriptablesOBJ
 {
     [CreateAssetMenu(menuName = "ScriptableObjects/ResourceDB", order = 1)]
-    public class ResourceDB : ScriptableObject
+    public class ResourcesDB : ScriptableObject
     {
-        public Resource gold;
-        public Resource copper;
-        public Resource iron;
-        public Resource diam;
+        public ResourceSO crystal;
+        public ResourceSO elest;
+        public ResourceSO rune;
+        public ResourceSO core;
     }
 }

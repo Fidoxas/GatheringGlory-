@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class StructureAreaChecker
 {
-    public static List<Vector2> TilesAround(Vector2[] structure, int areaLine)
+    public static List<Vector2> TilesAround(List<Vector2> structure, int areaLine)
     {
-        Vector2 start = new Vector2(structure[0].x - 1, structure[0].y - 1);
-        int structureAreaLen = (int)Mathf.Sqrt(structure.Length) + 2;
+        int structureLen = (int)Mathf.Sqrt(structure.Count);
+        int structureAreaLen = structureLen + 2;
+        Vector2 start = new Vector2(structure[0].x - 1, structure[0].y -structureLen );
 
         List<Vector2> structureArea = new List<Vector2>();
 
+        
         for (int y = 0; y < structureAreaLen; y++)
         {
             for (int x = 0; x < structureAreaLen; x++)
@@ -18,7 +20,7 @@ public class StructureAreaChecker
                 Vector2 tileCoords = new Vector2(start.x + x, start.y + y);
                 if (FitToArena(tileCoords, areaLine))
                 {
-                    structureArea.Add(tileCoords);
+                    structureArea.Add(tileCoords); 
                 }
             }
         }

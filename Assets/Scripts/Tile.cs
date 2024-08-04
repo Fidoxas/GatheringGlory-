@@ -1,98 +1,65 @@
-using System;
-using ScriptablesOBJ;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class Tile : MonoBehaviour
+public class Tile 
 {
-    public Player.Numbers player;
-    public Type type = Type.Neutral;
-    public Material mat;
-    public Vector2 coords;
+    public bool _assigned = false;
+    public Type type;
+    public Vector3 Position { get; private set; }
+    private GameObject _marker;
+    public Map.Object MapObject { get; private set; }
 
+    public void SetMapObject(Map.Object obj)
+    {
+        MapObject = obj;
+    } 
     public enum Type
     {
-        Resource,
-        Neutral,
-        Castle
+        Normal,
+        Castle,
+        Crystal,
+        Elest,
+        Rune,
+        Core,
     }
 
-    public static void CreateTile(Vector3[] triangle1, Vector3[] triangle2, Transform transform, Vector2 coords,
-        Type type,Player.Numbers occupator, Resource resource, Material mat, Castle.Type nation)
+    public bool IsResource()
     {
-        if (mat == null)
-        {
-            mat = new Material(Shader.Find("Standard"));
-            Debug.LogWarning("Material was null. A default standard material has been assigned.");
-        }
-
-        string tileName = $"Tile_{coords.x}_{coords.y}";
-        GameObject tileObj = new GameObject(tileName);
-        tileObj.transform.SetParent(transform);
-
-        Tile tileSc;
-        if (type == Type.Neutral)
-        {
-            tileSc = tileObj.AddComponent<Tile>();
-            tileSc.player = occupator;
-        }
-        else if (type == Type.Castle)
-        {
-            var castleTileSc = tileObj.AddComponent<CastleTile>();
-            castleTileSc.nation = nation;
-            tileSc = castleTileSc;
-            tileObj.AddComponent<TileId>().pNum = occupator;
-
-        }
-        else if (type == Type.Resource)
-        {
-            var resourceTileSc = tileObj.AddComponent<ResourceTile>();
-            resourceTileSc.mat = resource.material;
-            tileSc = resourceTileSc;
-            tileSc.player = occupator;
-        }
-        else
-        {
-            throw new ArgumentOutOfRangeException();
-        }
-
-        tileSc.mat = mat;
-        tileSc.coords = coords;
-        tileSc.type = type;
-
-        CreateTriangle(tileObj.transform, triangle1[0], triangle1[1], triangle1[2], tileSc.mat);
-        CreateTriangle(tileObj.transform, triangle2[0], triangle2[1], triangle2[2], tileSc.mat);
-
+        return type == Type.Core || type == Type.Elest || type == Type.Rune || type == Type.Crystal;
     }
 
-    public static void CreateTriangle(Transform parentTransform, Vector3 v0, Vector3 v1, Vector3 v2, Material material)
+    public Map.Resource GetMapObjectAsResource()
     {
-        GameObject triangleObj = new GameObject("Triangle");
-        triangleObj.transform.SetParent(parentTransform);
-        triangleObj.transform.localPosition = Vector3.zero;
-        triangleObj.transform.localRotation = Quaternion.identity;
-
-        Mesh mesh = new Mesh();
-        mesh.vertices = new[] { v0, v1, v2 };
-        mesh.triangles = new[] { 0, 1, 2 };
-        mesh.RecalculateNormals();
-
-        MeshFilter meshFilter = triangleObj.AddComponent<MeshFilter>();
-        meshFilter.mesh = mesh;
-
-        MeshRenderer renderer = triangleObj.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = material;
-
-        triangleObj.AddComponent<MeshCollider>();
-
-        int terrainLayer = LayerMask.NameToLayer("Terrain");
-        if (terrainLayer == -1)
-        {
-            Debug.LogError("Layer 'Terrain' does not exist. Please add it in the Layers settings.");
-        }
-        else
-        {
-            triangleObj.layer = terrainLayer;
-        }
+        return MapObject as Map.Resource;
     }
+
+    public bool IsCastle()
+    {
+        return type == Type.Castle;
+    }
+
+    public void SetPosition(Vector3 position)
+    {
+        _assigned = true;
+        this.Position = position;
+    }
+
+    // private void Start()
+    // {
+    //     transform.position = new Vector3(_position.x, 3, _position.y);
+    //     GameObject GO = Instantiate(_marker, transform.position, Quaternion.identity);
+    //     GO.transform.parent = this.transform;
+    //
+    //     MeshRenderer meshRenderer = GO.GetComponent<MeshRenderer>();
+    //     if (meshRenderer != null)
+    //     {
+    //         meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
+    //         meshRenderer.sharedMaterial.color = _color;
+    //     }
+    //     else
+    //     {
+    //         Debug.LogError("MeshRenderer not found on the marker GameObject.");
+    //     }
+    // }
 }
+

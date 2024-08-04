@@ -7,7 +7,7 @@ namespace ScriptablesOBJ
    [CreateAssetMenu(menuName = "ScriptableObjects/PlayersDB", order = 1)]
    public class PlayersDB : ScriptableObject
    {
-      public PlayerDB[] playerDbs;
+      public Stages.PlayerSo[] playerDbs;
       public Material material;
    }
 }

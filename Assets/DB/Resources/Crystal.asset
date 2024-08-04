@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Crystal
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: a566e34a2aff4ba49ae11b5aac8fa45d, type: 2}
-  type: 0
+  type: 1
+  resourceSourcePref: {fileID: 1403190950850934089, guid: cab32ce4a7818de45a289beb495e7397, type: 3}

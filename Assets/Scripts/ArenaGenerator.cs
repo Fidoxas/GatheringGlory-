@@ -1,43 +1,33 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using ScriptablesOBJ;
+using ScriptablesOBJ.Stages;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class ArenaGenerator : MonoBehaviour
 {
-    [SerializeField] private List<List<Tile.Type>> _arenaTiles;  
-    [SerializeField] private Stage[] stages;
-    [SerializeField] private GameObject terrainPrefab;
-    [SerializeField]float _seed;
-    
-    public int stageRows = 3;
-    public int spacing = 10;
+    [SerializeField] PlayersAssign playersAssign;
+    [SerializeField] float _seed;
+    [SerializeField] [Range(0, 100)] int resolution;
+
+    int xTiles = 30;
+    int zTiles = 30;
     private float seed;
-        
-    
+    // [SerializeField] private ResourcesGen resourcesGen;
+    [SerializeField] private StructuresCreator structuresCreator;
+
+    private Map _map;
+    [SerializeField] private BMPToGrid bmpToGrid;
+    [SerializeField] private TerrainGen ter;
+
     [ContextMenu("Generate Arena")]
     public void GenerateArenaFromEditor()
     {
-        seed = Random.Range(0.1f, _seed);
-        ClearArena();
-        GenerateArena();
-    }
-
-    
-    [ContextMenu("Generate Arena 2")]
-    public void GenerateArenaFromEditor2()
-    {
-        var arenaSize = stageRows * spacing;
-        _arenaTiles = new List<List<Tile.Type>>();
-        for (int i = 0; i < arenaSize; i++)
-        {
-            var row = new List<Tile.Type>();
-            _arenaTiles.Add(row);
-            for (int j = 0; j < arenaSize; j++)
-            {
-                row.Add(Tile.Type.Neutral);
-            }
-        }
-      
-        seed = Random.Range(0.1f, seed);
+        seed = Random.Range(0.1f, 0.5f);
+        TerrainGen.PerlinNoiseGenerator.SetSeed(seed);
         ClearArena();
         GenerateArena();
     }
@@ -46,80 +36,155 @@ public class ArenaGenerator : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
-            Destroy(child.gameObject);
+            DestroyImmediate(child.gameObject);
         }
+
     }
 
     void GenerateArena()
     {
-        Prepare();
-        // CreateStages();
-        CreateTerrain();
+        // playersAssign.reAssign();
+        ClearArena();
+        CreateGrid();
+        // PrepareStructuresCords();
+        var terrain = ter.CreateTerrain(seed, resolution,_map);
+        CreateStructures(terrain);
     }
 
-    private void Prepare()
+    private void CreateGrid()
     {
-        if (stages == null || stages.Length != stageRows * stageRows)
-        {
-            stages = new Stage[stageRows * stageRows];
-        }
-
-    }
-
-    private void CreateStages()
-    {
-        for (int i = 0; i < stageRows; i++)
-        {
-            for (int j = 0; j < stageRows; j++)
-            {
-                int index = i * stageRows + j;
-                if (stages[index] == null)
-                {
-                    GameObject stageObject = new GameObject("stage_" + (index + 1).ToString());
-                    stageObject.transform.SetParent(this.transform);
-                    stageObject.transform.localPosition = new Vector3(j * spacing, 0, i * -spacing);
-                    stageObject.transform.localRotation = Quaternion.identity;
-                    SetStage(stageObject, index);
-                }
-            }
-        }
-    }
-
-    private void SetStage(GameObject stage, int index)
-    {
-        Stage s;
-
-        if (index == 4)
-        {
-            s = stage.AddComponent<SpecialStage>();
-            s.numberP = Player.Numbers.None;
-            s.type = Stage.Type.Special;
-        }
-        else
-        {
-            s = stage.AddComponent<Stage>();
-
-            if (index < (int)Stage.Type.Special)
-            {
-                s.numberP = (Player.Numbers)index;
-                s.type = (Stage.Type)index;
-            }
-            else
-            {
-                s.numberP = (Player.Numbers)(index - 1);
-                s.type = (Stage.Type)index;
-            }
-        }
-
-        s.gameObject = stage;
-        stages[index] = s;
+        _map = bmpToGrid.GenerateGridFromBmp();
     }
 
     private void CreateTerrain()
     {
-         var terrainObj = Instantiate(terrainPrefab, gameObject.transform);
-         var ter = terrainObj.GetComponent<Terrain>();
-         // Terrain ter = Terrain.CreateTerrainObj(stage).GetComponent<Terrain>();
-         StartCoroutine(ter.CreateTerrain(stageRows, spacing, seed)); // Correctly start the coroutine
+
+        // Terrain ter = Terrain.CreateTerrainObj(stage).GetComponent<Terrain>();
+        // StartCoroutine(ter.CreateTerrain(stageRows, spacing, seed,players)); 
+        ter.CreateTerrain(seed, resolution,_map);
+    }
+
+    // void PrepareStructuresCords()
+    // {
+    //     var castleStages = new List<Stage.Type>();
+    //
+    //     foreach (var player in playersAssign.players)
+    //     {
+    //         if (player == null)
+    //         {
+    //             Debug.LogError("Player is null!");
+    //             continue;
+    //         }
+    //
+    //         if (player == null)
+    //         {
+    //             Debug.LogError($"PlayerSo is null for player: {player.name}");
+    //             continue;
+    //         }
+    //
+    //         if (player.playerSo.castleSo == null)
+    //         {
+    //             Debug.LogError($"CastleSo is null for player: {player.name}");
+    //             continue;
+    //         }
+    //
+    //         castleStages.Add(player.playerSo.castleSo.startStage);
+    //     }
+    //
+    //     _terrainResources.Clear();
+    //     for (int currentStage = 0; currentStage < 9; currentStage++)
+    //     {
+    //         var currentStageType = (Stage.Type)currentStage;
+    //         if (currentStageType != Stage.Type.Special)
+    //         {
+    //             if (castleStages.Contains(currentStageType))
+    //             {
+    //                 var player = PlayerSo.CheckCurrentPByStage(currentStageType, playersAssign.db);
+    //                 player.castleSo.mat = playersAssign.db.material;
+    //                 player.castleSo.castleCords =
+    //                     CastleGenerator.DrawCastlePlace(xTiles, currentStage);
+    //                 List<Vector2> castleAreaCords =
+    //                     StructureAreaChecker.TilesAround(player.castleSo.castleCords.ToList(), xTiles);
+    //
+    //                 var castleArea = new TerrainGen.OccupiedField();
+    //                 castleArea.OccupiedTiles = castleAreaCords;
+    //                 occupedFields.Add(castleArea);
+    //             }
+    //
+    //             var resourcesForStage =
+    //                 resourcesGen.CreateResourcesForStage(occupedFields, currentStage, xTiles);
+    //
+    //             foreach (var resource in resourcesForStage)
+    //             {
+    //                 _terrainResources.Push(resource);
+    //                 Vector2[] resourceCoords = resource.Coords.ToArray();
+    //                 Array.Reverse(resourceCoords);
+    //                 List<Vector2> resourceAreaCords =
+    //                     StructureAreaChecker.TilesAround(resourceCoords.ToList(), xTiles);
+    //
+    //                 var resourceArea = new TerrainGen.OccupiedField();
+    //                 resourceArea.OccupiedTiles = resourceAreaCords;
+    //                 occupedFields.Add(resourceArea);
+    //             }
+    //         }
+    //         else if ((Stage.Type)currentStage == Stage.Type.Special)
+    //         {
+    //             var specialResource = resourcesGen.GenerateBestResource(occupedFields, currentStage, xTiles);
+    //             _terrainResources.Push(specialResource);
+    //             Vector2[] specialResourceCoords = specialResource.Coords.ToArray();
+    //             Array.Reverse(specialResourceCoords);
+    //             List<Vector2> specialResourceAreaCords =
+    //                 StructureAreaChecker.TilesAround(specialResourceCoords.ToList(), xTiles);
+    //
+    //             var specialResourceArea = new TerrainGen.OccupiedField();
+    //             specialResourceArea.OccupiedTiles = specialResourceAreaCords;
+    //             occupedFields.Add(specialResourceArea);
+    //         }
+    //     }
+    // }
+
+    private void CreateStructures(Terrain terrain)
+    {
+        GameObject structuresParent = new GameObject("Structures");
+        structuresParent.transform.parent = this.transform;
+        structuresCreator.terrain = terrain;
+        if (playersAssign.players.Count != _map.mapCastles.Count)
+        {
+            Debug.LogError("Players and castles " + playersAssign.players.Count + "  " + _map.mapCastles.Count);
+            throw new NotImplementedException();
+        }
+        for (int i = 0; i < playersAssign.players.Count; i++)
+        {
+            var player = playersAssign.players[i];
+            if (player.playerSo.castleSo.nation.castlePrefab == null)
+            {
+                Debug.LogError("nie ma obiektu");
+            }
+        
+            GameObject castleObject = structuresCreator.CreateCastle(
+                player.playerSo.castleSo.nation.castlePrefab,_map.mapCastles[i], player, seed);
+        
+            castleObject.transform.parent = structuresParent.transform;
+        }
+        
+        foreach (var res in _map.mapResources)
+        {
+            GameObject resObj =
+                structuresCreator.CreateResourceSource(res.resourceSo.resourceSourcePref, res, seed);
+            resObj.transform.transform.parent = structuresParent.transform;
+        }
+    }
+
+    bool IsTileInCastleCoords(Vector2 newTileCoords)
+    {
+        foreach (var player in playersAssign.db.playerDbs)
+        {
+            if (player.castleSo != null && player.castleSo.castleCords.Contains(newTileCoords))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

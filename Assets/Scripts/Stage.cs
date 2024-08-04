@@ -1,13 +1,14 @@
 using System.Collections.Generic;
+using ScriptablesOBJ.Stages;
 using UnityEngine;
 
 public class Stage : MonoBehaviour
 {
     public string pName;
     public Material material;
-    public Player.Numbers numberP;
+    public PlayerSo.Numbers numberP;
     public Type type;
-    public GameObject gameObject;
+    public new GameObject gameObject;
 
 
     public void ApplyMaterialToTriangles()
@@ -23,7 +24,7 @@ public class Stage : MonoBehaviour
         }
     }
 
-    public Stage(string pName, Material material, Player.Numbers numberP, Type type, GameObject gameObject,Vector2[] castleCoords,List<Vector2> tillesCoords)
+    public Stage(string pName, Material material, PlayerSo.Numbers numberP, Type type, GameObject gameObject,Vector2[] castleCoords,List<Vector2> tillesCoords)
     {
         this.pName = pName;
         this.material = material;

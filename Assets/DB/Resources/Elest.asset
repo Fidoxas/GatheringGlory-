@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Elest
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 84d17cc84e446114ea07779f892af7e7, type: 2}
-  type: 1
+  type: 2
+  resourceSourcePref: {fileID: 351562500187768032, guid: cdfaadb5a42b76744a150ae35bab112a, type: 3}

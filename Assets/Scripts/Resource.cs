@@ -1,18 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
-
-[CreateAssetMenu(menuName = "ScriptableObjects/Resource", order = 1)]
-public class Resource : ScriptableObject
+﻿public class Resource
 {
-    public Material material;
-    public Type type;
+    public Type ResourceType { get; private set; }
+
+    public Resource(Type resourceType)
+    {
+        ResourceType = resourceType;
+    }
+
     public enum Type
     {
+        Essence,
         Crystal,
         Elest,
-        Runes,
+        Rune,
         Core
     }
 }

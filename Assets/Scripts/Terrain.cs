@@ -1,214 +1,127 @@
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using ScriptablesOBJ;
-using ScriptablesOBJ.Stages;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Terrain : MonoBehaviour
 {
-    [SerializeField] private Stack<TerrainResource> _terrainResources = new Stack<TerrainResource>();
-    public List<Vector2> occupedTillesCords = new List<Vector2>();
-    public Castle[] castles = new Castle[8];
-    public PlayersDB playersDB;
-    [SerializeField] ResourcesGen resourcesGen;
+    private int _sizeX;
+    private int _sizeZ;
+    private int _resolution;
+    private Map _map;
+    private Mesh _mesh;
 
-    public IEnumerator CreateTerrain(int stageRows, int spacing, float seed)
+    /// <summary>
+    /// Ustawia teren, tworzy siatkę na podstawie wierzchołków i trójkątów.
+    /// </summary>
+    public void SetTerrain(List<Vector3> vertices, List<int> triangles, int resolution, Map map, int sizeX, int sizeZ)
     {
-        Vector3 arenaPos = gameObject.transform.localPosition;
-        PrepareStructures(spacing, stageRows);
-
-        var flatVertices = FindFlatVertices(0.5f, spacing, stageRows);
-        Debug.Log(flatVertices.ElementAtOrDefault(1));
-        for (int y = 0; y < spacing * stageRows; y++)
-        {
-            // int yI = spacing * stageRows - 1 - y;
-            for (int x = 0; x < spacing * stageRows; x++)
-            {
-                var newTileCoords = new Vector2(x, y);
-                Vector3[] vertices = GenerateVertices(x, y, flatVertices, arenaPos, seed);
-
-                var currentStage = StageChecker.CheckCurrentStage(newTileCoords, spacing, stageRows);
-                PlayerDB currentPlayerDB = Player.CheckCurrentPByStage(currentStage, playersDB);
-
-                if (currentStage != Stage.Type.Special && IsTileInCastleCoords(newTileCoords))
-                {
-                    Tile.CreateTile(new[] { vertices[0], vertices[2], vertices[1] },
-                        new[] { vertices[1], vertices[2], vertices[3] }, this.transform, newTileCoords,
-                        Tile.Type.Castle, currentPlayerDB.pNum,null, playersDB.material,currentPlayerDB.castle.nation.kind);
-                }
-                else if (IsTileInResourceCoords(newTileCoords, out TerrainResource resource))
-                {
-                    Tile.CreateTile(new[] { vertices[0], vertices[2], vertices[1] },
-                        new[] { vertices[1], vertices[2], vertices[3] }, this.transform, newTileCoords,
-                        Tile.Type.Resource,Player.Numbers.None, resource.Resource, resource.Resource.material,Castle.Type.None);
-                }
-                else
-                {
-                    Tile.CreateTile(new[] { vertices[0], vertices[2], vertices[1] },
-                        new[] { vertices[1], vertices[2], vertices[3] }, this.transform, newTileCoords,
-                        Tile.Type.Neutral,Player.Numbers.None, null, null,Castle.Type.None);
-                }
-            }
-        }
-        yield return new WaitForSeconds(0.001f);
-        CreateStructures(stageRows *spacing);
+        _resolution = resolution;
+        _mesh = CreateMesh(vertices, triangles);
+        _map = map;
+        _sizeX = sizeX;
+        _sizeZ = sizeZ;
     }
 
-    private void CreateStructures(int Arealen)
+    /// <summary>
+    /// Tworzy i przypisuje siatkę terenu.
+    /// </summary>
+    private Mesh CreateMesh(List<Vector3> vertices, List<int> triangles)
     {
-        GameObject structuresParent = new GameObject("Structures");
-    
-        foreach (var Castle in castles)
+        Mesh mesh = new Mesh
         {
-            GameObject castleObject = StructuresCreator.CreateCastle(Castle.castleCords, Castle.nation.castlePrefab,Castle.pNum,Arealen);
-        
-            if (castleObject != null)
-            {
-                castleObject.transform.parent = structuresParent.transform;
-                Castle.castleObj = castleObject;
-            }
-        }
+            indexFormat = IndexFormat.UInt32,
+            vertices = vertices.ToArray(),
+            triangles = triangles.ToArray()
+        };
+        mesh.RecalculateNormals();
+
+        // Dodaj komponenty siatki
+        MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
+        MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
+        MeshCollider meshCollider = gameObject.AddComponent<MeshCollider>();
+
+        meshFilter.mesh = mesh;
+        meshCollider.sharedMesh = mesh;
+
+        // Przypisz domyślny materiał
+        Material standardMaterial = new Material(Shader.Find("Standard"));
+        meshRenderer.material = standardMaterial;
+
+        return mesh;
     }
 
-    private List<Vector2> FindFlatVertices(float flatHeight, int spacing, int stageRows)
+    /// <summary>
+    /// Dopasowuje wysokości wierzchołków w zadanym obszarze do średniej wysokości sąsiednich pól.
+    /// </summary>
+    public void MatchFieldYToTerrain(Vector3 startTile, Vector3 endTile)
     {
-        var flatVerts = new List<Vector2>();
-        for (int y = 0; y < spacing * stageRows; y++)
+        if (_mesh == null)
         {
-            for (int x = 0; x < spacing * stageRows; x++)
-            {
-                var newTileCoords = new Vector2(x, y);
-                Vector3[] vertices = new Vector3[4];
-                if (occupedTillesCords.Contains(newTileCoords))
-                {
-                    vertices[0] = new Vector3(x, flatHeight, y);
-                    vertices[1] = new Vector3(x + 1, flatHeight, y);
-                    vertices[2] = new Vector3(x, flatHeight, y + 1);
-                    vertices[3] = new Vector3(x + 1, flatHeight, y + 1);
+            Debug.LogError("Mesh is not initialized!");
+            return;
+        }
 
-                    foreach (Vector3 vert in vertices)
-                    {
-                        flatVerts.Add(new Vector2(vert.x, vert.z));
-                    }
+        var vertices = _mesh.vertices;
+        Vector3 startBounds = startTile - new Vector3(1, 0, 1);
+        Vector3 endBounds = endTile + new Vector3(2, 0, 2);
+
+        float heightSum = 0;
+        int heightCount = 0;
+
+        for (float x = startBounds.x; x <= endBounds.x; x += 1f / _resolution)
+        {
+            for (float z = startBounds.z; z <= endBounds.z; z += 1f / _resolution)
+            {
+                if (startTile.x<=x && endTile.x+1 >=z ||startTile.z<=x && endTile.z+1 >=z )
+                {
+                    continue;
+                }
+                int vertIndex = GetVerticeIndex(x, z);
+                if (IsValidVerticeIndex(vertIndex, vertices.Length))
+                {
+                    heightSum += vertices[vertIndex].y;
+                    heightCount++;
                 }
             }
         }
-        return flatVerts;
-    }
 
-    private Vector3[] GenerateVertices(int x, int yI, List<Vector2> flatVertices, Vector3 arenaPos, float seed)
-    {
-        Vector3[] vertices = new Vector3[4];
-        float flatHeight = 0.5f;
+        float averageHeight = heightCount > 0 ? heightSum / heightCount : 0;
 
-        vertices[0] = new Vector3(x,
-            flatVertices.Contains(new Vector2(x, yI))
-                ? flatHeight
-                : Mathf.PerlinNoise((x + arenaPos.x) * seed, (yI + arenaPos.z) * seed), yI);
-        vertices[1] = new Vector3(x + 1,
-            flatVertices.Contains(new Vector2(x + 1, yI))
-                ? flatHeight
-                : Mathf.PerlinNoise((x + 1 + arenaPos.x) * seed, (yI + arenaPos.z) * seed), yI);
-        vertices[2] = new Vector3(x,
-            flatVertices.Contains(new Vector2(x, yI + 1))
-                ? flatHeight
-                : Mathf.PerlinNoise((x + arenaPos.x) * seed, (yI + 1 + arenaPos.z) * seed), yI + 1);
-        vertices[3] = new Vector3(x + 1,
-            flatVertices.Contains(new Vector2(x + 1, yI + 1))
-                ? flatHeight
-                : Mathf.PerlinNoise((x + 1 + arenaPos.x) * seed, (yI + 1 + arenaPos.z) * seed), yI + 1);
-
-        for (int i = 0; i < vertices.Length; i++)
+        // Ustaw wysokości wierzchołków na średnią
+        for (float x = startBounds.x; x <= endBounds.x; x += 1f / _resolution)
         {
-            vertices[i] += arenaPos;
-        }
-
-        return vertices;
-    }
-
-    void PrepareStructures(int spacing, int stageRows)
-    {
-        _terrainResources.Clear();
-        for (int currentStage = 0; currentStage < 9; currentStage++)
-        {
-            if ((Stage.Type)currentStage != Stage.Type.Special)
+            for (float z = startBounds.z; z <= endBounds.z; z += 1f / _resolution)
             {
-                int adjustedStage = currentStage < 4 ? currentStage : currentStage - 1;
-                castles[adjustedStage] = playersDB.playerDbs[adjustedStage].castle;
-                castles[adjustedStage].mat = playersDB.material;
-                castles[adjustedStage].pNum = playersDB.playerDbs[adjustedStage].pNum;
-                castles[adjustedStage].castleCords = CastleGenerator.DrawCastlePlace(spacing, currentStage, stageRows);
-                Debug.Log(castles[adjustedStage].castleCords[0].y + " " + adjustedStage + "");
-                List<Vector2> castleArea =
-                    StructureAreaChecker.TilesAround(castles[adjustedStage].castleCords.ToArray(), spacing * stageRows);
-                occupedTillesCords.AddRange(castleArea);
-                Debug.Log(castleArea.ElementAtOrDefault(0).y + "castle area");
-                var resourcesForStage =
-                    resourcesGen.CreateResourcesForStage(occupedTillesCords, currentStage, spacing, stageRows);
-
-                    foreach (var resource in resourcesForStage)
-                    {
-                        _terrainResources.Push(resource);
-                        List<Vector2> resourceCoords = new List<Vector2> { resource.Coords.Peek() };
-                        List<Vector2> resourceArea = StructureAreaChecker.TilesAround(resourceCoords.ToArray(), spacing * stageRows);
-                        occupedTillesCords.AddRange(resourceArea);
-                    }
-                }
-                else if ((Stage.Type)currentStage == Stage.Type.Special)
+                int vertIndex = GetVerticeIndex(x, z);
+                if (IsValidVerticeIndex(vertIndex, vertices.Length))
                 {
-                var specialResource = resourcesGen.GenerateBestResource(occupedTillesCords, currentStage, spacing);
-                _terrainResources.Push(specialResource);
-                Vector2[] specialResourceCoords = specialResource.Coords.ToArray();
-                Array.Reverse(specialResourceCoords);
-                Debug.Log("DLUGOSC " + specialResourceCoords.Length);
-                List<Vector2> specialResourceArea = StructureAreaChecker.TilesAround(specialResourceCoords, spacing * stageRows);
-                    occupedTillesCords.AddRange(specialResourceArea);
-            }
-        }
-    }
-
-    bool IsTileInCastleCoords(Vector2 newTileCoords)
-    {
-        foreach (var castle in castles)
-        {
-            if (castle != null && castle.castleCords.Contains(newTileCoords))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    bool IsTileInResourceCoords(Vector2 newTileCoords, out TerrainResource foundResource)
-    {
-        foreach (var resource in _terrainResources)
-        {
-            foreach (var coords in resource.Coords)
-            {
-                if (coords == newTileCoords)
-                {
-                    foundResource = resource;
-                    return true;
+                    vertices[vertIndex] = new Vector3(vertices[vertIndex].x, averageHeight, vertices[vertIndex].z);
                 }
             }
         }
-        foundResource = null;
-        return false;
+
+        _mesh.vertices = vertices;
+        _mesh.RecalculateNormals();
+        this.GetComponent<MeshCollider>().sharedMesh = _mesh;
     }
 
-    public class TerrainResource
+    /// <summary>
+    /// Sprawdza, czy indeks wierzchołka jest prawidłowy.
+    /// </summary>
+    private bool IsValidVerticeIndex(int index, int length)
     {
-        public Stack<Vector2> Coords { get; set; }
-        public Resource Resource { get; set; }
-
-        public TerrainResource(Stack<Vector2> coords, Resource resource)
-        {
-            Coords = coords;
-            Resource = resource;
-        }
+        return index >= 0 && index < length;
     }
-    
+
+    /// <summary>
+    /// Oblicza indeks wierzchołka na podstawie pozycji w siatce.
+    /// </summary>
+    public int GetVerticeIndex(float x, float z)
+    {
+        if (x < 0 || x >= _sizeX || z < 0 || z >= _sizeZ)
+            return -1;
+        return (int)(z * _sizeZ * _resolution + x * _resolution);
+    }
 }

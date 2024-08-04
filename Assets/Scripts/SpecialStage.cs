@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ScriptablesOBJ.Stages;
 using UnityEngine;
 
 public class SpecialStage : Stage
@@ -10,7 +11,7 @@ public class SpecialStage : Stage
     }
 
     public SpecialStage(Material material, GameObject gameObject,List<GameObject> tilles) 
-        : base("", material, Player.Numbers.None, Type.Special, gameObject ,null,null)
+        : base("", material, PlayerSo.Numbers.None, Type.Special, gameObject ,null,null)
     {
         
     }

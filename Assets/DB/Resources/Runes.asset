@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Runes
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 600ecf90e7a768c48a6910e2b3453147, type: 2}
-  type: 0
+  type: 3
+  resourceSourcePref: {fileID: 9109411285341182058, guid: 241562fead566844a81e6cb977ddf68a, type: 3}
