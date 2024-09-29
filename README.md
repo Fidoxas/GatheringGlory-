@@ -6,4 +6,4 @@ Instalacja Sklonuj lub pobierz repozytorium na swój lokalny komputer. Otwórz U
 
 Jak użyć? Znajdź w hierarchy (Lista zazwyczaj po lewej stronie ekranu) obiekt ArenaGenerator a w inspektorze pojawią się jej ustawienia do modyfikowania, można stworzyć własną Arene z losowo rozmieszczonymi elementami
 
-Jak Grać? Naciskasz na przyciski na boku ekranu im bardziej oddalone od srodka tym bardziej dynamiczne celem jest unikac przeszkód ca pomoca unikow i dobierania odpowiedniego koloru skoku by zwalczyc błyskawice.
+Jak Grać? za pomocą interface możesz tworzyć podstawowe jednostki a poźniej nimi sterować wybierająć je a nastepnie wydając konkretne rozkazy np atak na cel.
