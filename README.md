@@ -1,4 +1,4 @@
-# TrueGlory
+Gathering Glory to gra strategiczna, która wciąż jest w fazie rozwoju. Gra oferuje rozbudowany system automatycznej generacji oraz mechanikę sterowania jednostkami po ich zaznaczeniu, co zapewnia graczom pełną kontrolę nad swoimi siłami.
 
 Wymagania wstępne Unity: Aby otworzyć i uruchomić projekt, wymagane jest zainstalowanie Unity na komputerze. Projekt jest kompatybilny z wersją Unity 2021.3 lub wyższą. Możesz pobrać Unity z oficjalnej strony Unity.
 
